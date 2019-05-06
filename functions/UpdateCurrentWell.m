@@ -6,8 +6,10 @@ function  UpdateCurrentWell( handles )
 %   Detailed explanation goes here
 
 handles.Result.ScoreStatus(handles.CurrentWell)=get(handles.ScoreStatus,'Value');
-handles.Result.StandardPeaks{handles.CurrentWell}=get(handles.StandardPeaks,'Data');
-handles.Result.SignalPeaks{handles.CurrentWell}=get(handles.SignalPeaks,'Data');
+%handles.Result.StandardPeaks{handles.CurrentWell}=get(handles.StandardPeaks,'Data');
+%handles.Result.SignalPeaks{handles.CurrentWell}=get(handles.SignalPeaks,'Data');
+AssignSignalPeaksFromMatrix(handles.Result,handles.CurrentWell,get(handles.SignalPeaks,'Data'));
+AssignSignalPeaksFromMatrix(handles.Result,handles.CurrentWell,get(handles.SignalPeaks,'Data'));
 
 end
 

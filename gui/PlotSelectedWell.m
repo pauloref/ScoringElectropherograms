@@ -12,11 +12,12 @@ cla;
 plot(handles.Result.WellList.Wells(handles.CurrentWell),chans);
 hold on
 if(get(handles.StandardPeaksOn,'Value') && handles.Result.ScoreStatus(handles.CurrentWell))
-    SP=handles.Result.StandardPeaks{handles.CurrentWell};
+    SP=get(handles.StandardPeaks,'Data');%handles.Result.StandardPeaks{handles.CurrentWell};
     plot(SP(:,2),SP(:,1),'xr');
 end
 if(get(handles.SignalPeaksOn,'Value') && handles.Result.ScoreStatus(handles.CurrentWell))
-    SP=handles.Result.SignalPeaks{handles.CurrentWell};
+    %SP=handles.Result.SignalPeaks{handles.CurrentWell};
+    SP=get(handles.SignalPeaks,'Data');
     plot(SP(:,2),SP(:,1),'xk');
 end
 hold off

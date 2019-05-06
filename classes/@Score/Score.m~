@@ -53,7 +53,7 @@ classdef Score < handle
                 if(~(obj.ScoreStatus(i)) || isempty(obj.SignalPeaks{i}) )
                     %If the well is marked as not score, or has no signal
                     %peak, we set the Mutant fraction as NaN, and continue
-                    obj.MutantFraction{i}=NaN;
+                    MutantFraction{i}=NaN;
                     continue;
                 end
                 %Else, we take all the peaks in the signal, and attempt to
@@ -63,13 +63,13 @@ classdef Score < handle
                 %peaks found
                 switch length(Peaks)
                     case 1
-                        obj.MutantFraction{i}=[1];
+                        MutantFraction{i}=[1];
                     case 2
                     case 3
                     case 4
                         MF=( Peaks{1}.Area+Peaks{3}.Area/2+Peaks{4}.Area/2)/...
                             (Peaks{1}.Area+Peaks{2}.Area+Peaks{3}.Area+Peaks{4}.Area);
-                        obj.MutantFraction{i}=[MF 1-MF];
+                        MutantFraction{i}=[MF 1-MF];
                     case 5
                     case 6
                     case 7
@@ -78,7 +78,6 @@ classdef Score < handle
                 end
                 
             end
-            MutantFraction=obj.MutantFraction;
         end
         
         function SPM=SignalPeakMatrix(obj,WellNumber)
@@ -89,17 +88,16 @@ classdef Score < handle
             %of cells, each cell will contain the matrix of Peaks position
             %corresponding to each well.
             if(WellNumber>0)
-                NP=length(obj.SignalPeaks{WellNumber});
-                SPM=zeros(NP,2);
+                NP=length(SignalPeaks{WellNumber};
+                SPM=matrix(NP,2);
                 for k= 1:NP
-                    obj.SignalPeaks{WellNumber};
-                    SPM(k,2)=obj.SignalPeaks{WellNumber}{k}.X;
-                    SPM(k,1)=obj.SignalPeaks{WellNumber}{k}.Y;
+                    SPM(k,2)=obj.SignalPeaks{WellNumber,k}.X;
+                    SPM(k,1)=obj.SignalPeaks{WellNumber,k}.Y;
                 end
             end
         end
         
-        function SPM=StandardPeakMatrix(obj,WellNumber)
+        function SPM=SignalPeakMatrix(obj,WellNumber)
             %a function that returns the Signal peaks in the Score. If the
             %well number is specified, it will return a matrix containing
             %only the signal peaks in that speciffic well.
@@ -107,11 +105,11 @@ classdef Score < handle
             %of cells, each cell will contain the matrix of Peaks position
             %corresponding to each well.
             if(WellNumber>0)
-                NP=length(obj.StandardPeaks{WellNumber});
-                SPM=zeros(NP,2);
+                NP=length(StandardPeaks{WellNumber};
+                SPM=matrix(NP,2);
                 for k= 1:NP
-                    SPM(k,2)=obj.StandardPeaks{WellNumber}{k}.X;
-                    SPM(k,1)=obj.StandardPeaks{WellNumber}{k}.Y;
+                    SPM(k,2)=obj.SignalPeaks{WellNumber,k}.X;
+                    SPM(k,1)=obj.SignalPeaks{WellNumber,k}.Y;
                 end
             end
         end

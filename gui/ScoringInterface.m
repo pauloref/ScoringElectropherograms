@@ -22,7 +22,7 @@ function varargout = ScoringInterface(varargin)
 
 % Edit the above text to modify the response to help ScoringInterface
 
-% Last Modified by GUIDE v2.5 02-Sep-2016 10:31:21
+% Last Modified by GUIDE v2.5 04-May-2019 17:41:24
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -289,7 +289,7 @@ SignalPeaks=get(handles.SignalPeaks,'Data');
 
 switch KeyPressed
     case 0
-    case {'1', '2', '3', '4'}
+    case {'1', '2', '3', '4','5','6','7','8','9'}
         n=str2double(KeyPressed);
         [a b]=PeakInSignal(Signal( (pos-Window):(pos+Window)));
         SignalPeaks(n,:)=[a b+pos-Window-1];
@@ -332,7 +332,7 @@ function SaveResults_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 Wells=cellstr(get(handles.WellListBox,'String'));
-Fractions=handles.Result.MutantFraction';
+Fractions=cell2mat(handles.Result.MutantFraction)';
 T=table(Wells,Fractions);
 [Filename,Folder,Type]=uiputfile('*.csv','Save Mutant Fractions');
 locdir=cd;
@@ -434,4 +434,27 @@ function Zoom_CreateFcn(hObject, eventdata, handles)
 % Hint: slider controls usually have a light gray background.
 if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor',[.9 .9 .9]);
+end
+
+
+
+function PeakNumber_Callback(hObject, eventdata, handles)
+% hObject    handle to PeakNumber (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of PeakNumber as text
+%        str2double(get(hObject,'String')) returns contents of PeakNumber as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function PeakNumber_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to PeakNumber (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
 end

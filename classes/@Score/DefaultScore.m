@@ -3,7 +3,5 @@ function DefaultScore(obj,ScoreFunction,Distances,Threshold,CutOff,wavelet,Wavel
 %   Detailed explanation goes here
 ScoreFunction(obj,Distances,Threshold,CutOff,wavelet,WaveletThreshold)
 
-
-
 end
 

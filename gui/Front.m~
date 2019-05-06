@@ -157,9 +157,7 @@ function OpenFolder_Callback(hObject, eventdata, handles)
 FolderName=uigetdir(); %Ask the user for the folder to open
 
 %call the function that reads a directory and outputs a list of wells
-%The WellList is stored in handles.Project 
 handles.Project=ReadStandardFolder(FolderName);
-
 guidata(hObject,handles); %Save the handle
 
 %plot(handles.Project.StandardData');
@@ -453,26 +451,20 @@ function ScoreProject_Callback(hObject, eventdata, handles)
 baseline=str2double(get(handles.Baseline,'string'));
 %Cuttoff
 cutoff=str2double(get(handles.CutOff,'string'));
-%We now read the function speciffic parameters
+%We 
 %The text parameter
 wavelet=get(handles.WaveletChoice,'string');
-%The additional numerical parameter
+
+%The additional numerical parameter to be 
 waveletthreshold=str2double(get(handles.WaveletThreshold,'string'));
-%We now read the distances (when they are needed
 Distances=[str2double(get(handles.Peak1,'string')) str2double(get(handles.Peak2,'string'))...
     str2double(get(handles.Peak3,'string')) str2double(get(handles.Peak4,'string'))];
-%We now identify which is the scoring fucntion that will be used
 ScoreFunctions=cellstr(get(handles.ScoringFunction,'String'));
 ScoreFunction=str2func(ScoreFunctions{get(handles.ScoringFunction,'Value')});
-%We create an object of type Score, called Result, from the data taken from
-%the project
+
 Result=Score(handles.Project);
-%And we score the Result calling the function DefaultScore that itself will
-%call upon the specific scoring function
 Result.DefaultScore(ScoreFunction,Distances,baseline,cutoff,wavelet,waveletthreshold);
-%We now save Result to be taken up by the scoring interface
 set(0,'userdata',Result)
-%We open the scoring interface
 SI=ScoringInterface;
 %guidata(SI,handles)
 

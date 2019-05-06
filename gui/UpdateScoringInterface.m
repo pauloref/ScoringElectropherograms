@@ -8,10 +8,10 @@ function UpdateScoringInterface(handles)
 
 %We plot the selected well
 %We now set the value of the tickbox to match the status of the well
-set(handles.ScoreStatus,'Value',handles.Result.ScoreStatus(handles.CurrentWell))
-set(handles.StandardPeaks,'Data',handles.Result.StandardPeaks{handles.CurrentWell})
-set(handles.SignalPeaks,'Data',handles.Result.SignalPeaks{handles.CurrentWell})
-set(handles.MutantFraction,'String', round(handles.Result.MutantFraction(handles.CurrentWell)*100))
+set(handles.ScoreStatus,'Value',handles.Result.ScoreStatus(handles.CurrentWell));
+set(handles.StandardPeaks,'Data',StandardPeakMatrix(handles.Result,handles.CurrentWell));
+set(handles.SignalPeaks,'Data',SignalPeakMatrix(handles.Result,handles.CurrentWell));
+set(handles.MutantFraction,'Data', handles.Result.MutantFraction{handles.CurrentWell});
 PlotSelectedWell(handles);
 end
 
