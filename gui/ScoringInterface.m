@@ -22,7 +22,7 @@ function varargout = ScoringInterface(varargin)
 
 % Edit the above text to modify the response to help ScoringInterface
 
-% Last Modified by GUIDE v2.5 09-May-2019 18:48:14
+% Last Modified by GUIDE v2.5 11-May-2019 20:49:31
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -229,6 +229,7 @@ function figure1_WindowKeyPressFcn(hObject, eventdata, handles)
 %	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
 % handles    structure with handles and user data (see GUIDATA)
 modifiers = get(gcf,'currentModifier');
+%eventdata.Key
 switch eventdata.Key
     case 'space' %Change score status, from scored to unscored, or inverse
         Status=get(handles.ScoreStatus,'Value');
@@ -290,11 +291,25 @@ switch eventdata.Key
             set(handles.SignalPeaks,'Data',[0,0]);
             UpdateCurrentWell(handles);
             UpdateScoringInterface(handles);
-            
-            
         end
         
+    case 'downarrow'
+        if(get(handles.WellListBox,'Value') < handles.Result.WellList.N)
+        set(handles.WellListBox,'Value',get(handles.WellListBox,'Value')+1);
+        %handles.Result.ScoreStatus(handles.CurrentWell)=get(handles.WellListBox,'Value');
+        UpdateScoringInterface(handles);
+        end
+        
+    case 'uparrow'
+        if(get(handles.WellListBox,'Value') > 1)
+        set(handles.WellListBox,'Value',get(handles.WellListBox,'Value')-1);
+        %handles.Result.ScoreStatus(handles.CurrentWell)=get(handles.WellListBox,'Value');
+        UpdateScoringInterface(handles);
+        end
+        
+        
 end
+
 
 
 % --- Executes on mouse press over axes background.
@@ -494,4 +509,3 @@ set(handles.StandardPeaks,'Data',[0,0]);
 set(handles.SignalPeaks,'Data',[0,0]);
 UpdateCurrentWell(handles);
 UpdateScoringInterface(handles);
-
