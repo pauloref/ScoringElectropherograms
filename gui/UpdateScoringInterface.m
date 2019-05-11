@@ -12,6 +12,7 @@ set(handles.ScoreStatus,'Value',handles.Result.ScoreStatus(handles.CurrentWell))
 set(handles.StandardPeaks,'Data',StandardPeakMatrix(handles.Result,handles.CurrentWell));
 set(handles.SignalPeaks,'Data',SignalPeakMatrix(handles.Result,handles.CurrentWell));
 set(handles.MutantFraction,'Data', handles.Result.MutantFraction{handles.CurrentWell});
+set(handles.PeakNumber,'String',int2str(size(get(handles.SignalPeaks,'Data'),1)));
 PlotSelectedWell(handles);
 end
 

@@ -205,17 +205,14 @@ function SavePeaks_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 %This button will save peak information in a spreadsheat. The information
 %stored will be: X, Y and Area. Each will be in a different sheet of the
-%file.
+%file. 
 Wells=cellstr(get(handles.WellListBox,'String'));
+T=table(Wells,Fractions);
 [Filename,Folder,Type]=uiputfile('*.xlsx','Save Mutant Fractions');
 locdir=cd;
 cd(Folder);
-Variables={'X','Y','Area'};
-for i=1:3
-    values=GetPeakValue(handles.Result,Variables{i});
-    T=table(Wells,values);
-    writetable(T,Filename,'WriteRowNames', false,'Sheet',i);
-end
+
+writetable(T,Filename,'WriteRowNames', false,'Sheet',1);
 cd(locdir);
 UpdateCurrentWell(handles);
 UpdateScoringInterface(handles);

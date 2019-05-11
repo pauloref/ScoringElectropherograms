@@ -62,8 +62,6 @@ classdef Peak < handle
         function Value=get(obj,Prop)
             if(isprop(obj,Prop))
                 Value=obj.(Prop);
-            else
-                error(strcat('Input must be a property type of object Peak \n input is:',Prop));
             end
         end
         %

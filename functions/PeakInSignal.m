@@ -11,8 +11,8 @@ if(isempty(pY))
 end
 [~,imax]=max(pro);
 %A=pro(imax)*width(imax);
-Y=pY(imax)
-X=pX(imax)
+Y=pY(imax);
+X=pX(imax);
 
 end
 

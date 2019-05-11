@@ -15,8 +15,9 @@ classdef Score < handle
     end
     
     properties (Dependent = true )
-        PeakHeights
-        PeakPositions
+        PeakX
+        PeakY
+        PeakArea
     end
     
     methods
@@ -67,7 +68,7 @@ classdef Score < handle
                     case 2
                     case 3
                     case 4
-                        MF=( Peaks{1}.Area+Peaks{3}.Area/2+Peaks{4}.Area/2)/...
+                        MF=(Peaks{1}.Area+Peaks{3}.Area/2+Peaks{4}.Area/2)/...
                             (Peaks{1}.Area+Peaks{2}.Area+Peaks{3}.Area+Peaks{4}.Area);
                         obj.MutantFraction{i}=[MF 1-MF];
                     case 5
@@ -115,7 +116,11 @@ classdef Score < handle
                 end
             end
         end
+        
         function AssignSignalPeaksFromMatrix(obj,WellNumber,PeakData)
+            %A function that assigns the signal peaks in a given well from
+            %a matrix containing peak position. The matrix should be
+            %Npeaks by 2. The first dimension is Y, and the second X.
             NPeaks=size(PeakData,1);
             PeakContainer=cell(1,NPeaks);
             for k=1:NPeaks
@@ -123,7 +128,11 @@ classdef Score < handle
             end
             obj.SignalPeaks{WellNumber}=PeakContainer;
         end
+        
         function AssignStandardlPeaksFromMatrix(obj,WellNumber,PeakData)
+            %A function that assigns the Standard peaks in a given well from
+            %a matrix containing peak position. The matrix should be
+            %Npeaks by 2. The first dimension is Y, and the second X.
             NPeaks=size(PeakData,1);
             PeakContainer=cell(1,NPeaks);
             for k=1:NPeaks
@@ -131,6 +140,41 @@ classdef Score < handle
             end
             obj.StandardPeaks{WellNumber}=PeakContainer;
         end
+        
+        function PeakX=get.PeakX(obj)
+            %A get fucntion for peak positions. The output is a matrix
+            %containing the X values for each peak founc in each well
+        end
+        
+        function PeakY=get.PeakY(obj)
+            %A get fucntion for peak heights. The output is a matrix
+            %containing the Y values for each peak founc in each well
+        end
+        
+        function PeakA=get.PeakArea(obj)
+            %A get fucntion for peak areas. The output is a matrix
+            %containing the Area values for each peak founc in each well
+        end
+        
+        function PeakV=GetPeakValue(obj,Value)
+            %A function that returns the a specific value type from all
+            %peaks in a matrix format. For example, if Value ='X', the
+            %matrix will contain all X values for all peaks in thee Score
+            %object.
+            %@TODO Edit the following code to assign a size to PeakV that
+            %is actualy the length of the WellList-by-maximum number of
+            %peaks
+            PeakV=zeros(obj.WellList.N,9);
+            for k = [obj.WellList.WellList{:}]%we loop through each well
+                i=obj.WellList.wellNumber((k)); %and find out the well number
+                for j=1:length(obj.SignalPeaks{i})
+                    PeakV(i,j)=get(obj.SignalPeaks{i}{j},Value);
+                end
+                
+            end
+            
+        end
+        
     end
     
 end
