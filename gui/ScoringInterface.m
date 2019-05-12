@@ -90,7 +90,6 @@ function WellListBox_Callback(hObject, eventdata, handles)
 contents = cellstr(get(hObject,'String'));
 handles.CurrentWell=handles.Result.WellList.wellNumber(contents{get(hObject,'Value')});
 guidata(hObject,handles);
-
 %The interface is now updated.
 UpdateScoringInterface(handles);
 %We now proceed to plotting it using a dedicated function for the purpose
@@ -232,7 +231,9 @@ modifiers = get(gcf,'currentModifier');
 %eventdata.Key
 switch eventdata.Key
     case 'space' %Change score status, from scored to unscored, or inverse
+        %UpdateScoringInterface(handles);
         Status=get(handles.ScoreStatus,'Value');
+        %handles.Result.ScoreStatus(handles.CurrentWell)= ~Status
         set(handles.ScoreStatus,'Value',~Status);
         UpdateCurrentWell(handles);
         UpdateScoringInterface(handles);
@@ -295,20 +296,23 @@ switch eventdata.Key
         
     case 'downarrow'
         if(get(handles.WellListBox,'Value') < handles.Result.WellList.N)
-        set(handles.WellListBox,'Value',get(handles.WellListBox,'Value')+1);
-        %handles.Result.ScoreStatus(handles.CurrentWell)=get(handles.WellListBox,'Value');
-        UpdateScoringInterface(handles);
+            set(handles.WellListBox,'Value',get(handles.WellListBox,'Value')+1);
+            handles.CurrentWell=(get(handles.WellListBox,'Value'));
+            guidata(hObject,handles);
+            UpdateScoringInterface(handles);
         end
         
     case 'uparrow'
         if(get(handles.WellListBox,'Value') > 1)
-        set(handles.WellListBox,'Value',get(handles.WellListBox,'Value')-1);
-        %handles.Result.ScoreStatus(handles.CurrentWell)=get(handles.WellListBox,'Value');
-        UpdateScoringInterface(handles);
+            set(handles.WellListBox,'Value',get(handles.WellListBox,'Value')-1);
+            handles.CurrentWell=(get(handles.WellListBox,'Value'));
+            guidata(hObject,handles);
+            UpdateScoringInterface(handles);
         end
         
         
 end
+%guidata(hObject,handles);
 
 
 

@@ -7,8 +7,11 @@ function UpdateScoringInterface(handles)
 %   Detailed explanation goes here
 
 %We plot the selected well
-%We now set the value of the tickbox to match the status of the well
 handles.CurrentWell=(get(handles.WellListBox,'Value'));
+%guidata(handles.WellListBox,handles)
+%handles.Result.WellList.WellNames(handles.CurrentWell,:)
+%handles.CurrentWell=handles.Result.WellList.wellNumber(contents{get(handles.WellListBox,'Value')});
+%We now set the value of the tickbox to match the status of the well
 set(handles.ScoreStatus,'Value',handles.Result.ScoreStatus(handles.CurrentWell));
 set(handles.StandardPeaks,'Data',StandardPeakMatrix(handles.Result,handles.CurrentWell));
 set(handles.SignalPeaks,'Data',SignalPeakMatrix(handles.Result,handles.CurrentWell));
