@@ -437,10 +437,8 @@ end
 CurentFolder=cd;
 cd('functions/ScoringFunctions');
 out_str = ls();
-out_str = out_str(3:end,:);
-%FunctionList=regexp(out_str(3:end,:),'\w*(?=.m)','match');
-FunctionList = split(string(out_str),'.m');
-FunctionList = cellstr(char(FunctionList(:,1)));
+FunctionList=regexp(out_str(3:end,:),'\w*(?=.m)','match');
+FunctionList(1:2) = [];
 set(hObject,'String',FunctionList);
 cd(CurentFolder)
 

@@ -61,7 +61,7 @@ classdef WellGroup
             %obj.returnWell allows the wells to be returned by calling
             %their names
             %Well=obj.Wells(strcmp([obj.WellList{:}],well));
-            Well = obj.Wells(find(ismember(obj.WellList,well)));
+            Well = obj.Wells(find(ismember(obj.WellList,well));
         end
         
         

@@ -12,14 +12,11 @@ cd(Folder); %change to folder specified by user
 %All the files present in the directory are read and used to create a list
 %of well names and files that will be imported.
 output_str = ls();
-%welllist=regexp(string(cellstr(output_str)'),'([ABCDEFGH]\d+).txt','tokens');
-%filelist=regexp(string(cellstr(output_str)'),'([ABCDEFGH]\d+).txt','match');
-filelist = (cellstr(output_str(3:end,:)));
-welllist = (cellstr(output_str(3:end,1:3)));
-%filelist(1:2) = []; welllist(1:2) = [];
+welllist=regexp((output_str),'([ABCDEFGH]\d+).txt','tokens');
+filelist=regexp((output_str),'([ABCDEFGH]\d+).txt','match');
 %We now use the constructor of the class WellGroup to create a well group
 %from all the text files that were present in the directory
-Output=WellGroup(filelist,welllist,Standard,Signal);
+Output=WellGroup(filelist{2:end},welllist{2:end},Standard,Signal);
 
 cd(CurrentDir); %move back to the original directory
 %plot(handles.Project.StandardData');
