@@ -12,7 +12,7 @@ Distances=(Distances-Distances(1));
 
 
 window=round(min(diff(Distances))/1.5-1);
-for k=[obj.WellList.WellList{:}]
+for k=string(split(strjoin(obj.WellList.WellList),' '))'
     i=obj.WellList.wellNumber(k);
     
     %We begin by initializing the peak position and height that will be

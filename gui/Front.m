@@ -167,7 +167,7 @@ guidata(hObject,handles); %Save the handle
 %We now update the listbox WellList to contain the name of all the wells
 %that were used and set the Signal and Standard channels to the ones that
 %are chosen.
-
+set(handles.FileName,'String',handles.Project.FileName);
 set(handles.WellList,'String',handles.Project.WellNames);
 set(handles.StandardChannel,'Value',handles.Project.Standard)
 set(handles.SignalChannel,'Value',handles.Project.Signal)
@@ -440,7 +440,7 @@ out_str = ls();
 out_str = out_str(3:end,:);
 %FunctionList=regexp(out_str(3:end,:),'\w*(?=.m)','match');
 FunctionList = split(string(out_str),'.m');
-FunctionList = cellstr(char(FunctionList(:,1)));
+FunctionList = cellstr(FunctionList);
 set(hObject,'String',FunctionList);
 cd(CurentFolder)
 

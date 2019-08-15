@@ -309,6 +309,8 @@ switch eventdata.Key
             guidata(hObject,handles);
             UpdateScoringInterface(handles);
         end
+    %case 'p'
+    %    axes1_PeakAssign(hObject, eventdata, handles)
         
         
 end
@@ -345,6 +347,7 @@ set(handles.StandardPeaks,'Data',StandardPeaks);
 set(handles.SignalPeaks,'Data',SignalPeaks);
 UpdateCurrentWell(handles);
 UpdateScoringInterface(handles);
+
 
 
 function MutantFraction_Callback(hObject, eventdata, handles)

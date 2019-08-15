@@ -49,7 +49,7 @@ classdef Score < handle
             %this function will attempt to return the mutant fraction in
             %each well. The size of the output will depend on the number of
             %mutants identified in the well.
-            for k = [obj.WellList.WellList{:}]%we loop through each well
+            for k = string(split(strjoin(obj.WellList.WellList),' '))'%we loop through each well
                 i=obj.WellList.wellNumber((k)); %and find out the well number
                 if(~(obj.ScoreStatus(i)) || isempty(obj.SignalPeaks{i}) )
                     %If the well is marked as not score, or has no signal

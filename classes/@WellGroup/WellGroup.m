@@ -7,7 +7,6 @@ classdef WellGroup
         Signal   %The channel corresponding to the Signal in the group
         Standard %The channel corresponding to the Standard (if any)
         WellList %A list of the names of the wells in the Wells property
-        
     end
     
     properties (Dependent = true )
@@ -52,8 +51,7 @@ classdef WellGroup
         end
         
         function Number = wellNumber(obj,well)
-            index=1:obj.N;
-            Number=index(strcmp([obj.WellList{:}],well));
+            Number=find(ismember(string(obj.WellList),well));
         end
         
        
