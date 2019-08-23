@@ -1,7 +1,7 @@
 function DoNotScore(obj,Distances,Threshold,CutOff,wavelet,WaveletThreshold)
 %A function that does not score. It simply returns all wells as not scored,
 %and all peaks as 0. 
-
+fileName = obj.fileName;
 Standard=obj.WellList.StandardData;
 Signal=obj.WellList.SignalData;
 Standard(Standard<Threshold)=0;

@@ -22,7 +22,7 @@ function varargout = ScoringInterface(varargin)
 
 % Edit the above text to modify the response to help ScoringInterface
 
-% Last Modified by GUIDE v2.5 11-May-2019 20:49:31
+% Last Modified by GUIDE v2.5 21-Aug-2019 11:26:08
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -59,7 +59,7 @@ handles.CurrentWell=1;
 % Update handles structure
 guidata(hObject, handles);
 set(handles.WellListBox,'String',handles.Result.WellList.WellNames);
-
+set(handles.file_name_edit, 'String', handles.Result.fileName);
 % UIWAIT makes ScoringInterface wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
 
@@ -206,10 +206,12 @@ function SavePeaks_Callback(hObject, eventdata, handles)
 %stored will be: X, Y and Area. Each will be in a different sheet of the
 %file.
 Wells=cellstr(get(handles.WellListBox,'String'));
-[Filename,Folder,Type]=uiputfile('*.xlsx','Save Mutant Fractions');
+%[Filename,Folder,Type]=uiputfile('*.xlsx','Save Mutant Fractions');
+[Filename,Folder,Type]=uiputfile('*.xlsx','Save Peaks',handles.Result.fileName);
 locdir=cd;
 cd(Folder);
 Variables={'X','Y','Area'};
+
 for i=1:3
     values=GetPeakValue(handles.Result,Variables{i});
     T=table(Wells,values);
@@ -516,3 +518,66 @@ set(handles.StandardPeaks,'Data',[0,0]);
 set(handles.SignalPeaks,'Data',[0,0]);
 UpdateCurrentWell(handles);
 UpdateScoringInterface(handles);
+
+
+
+% --- Executes on button press in savetotraininglibrary.
+function savetotraininglibrary_Callback(hObject, eventdata, handles)
+% hObject    handle to savetotraininglibrary (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+Wells=cellstr(get(handles.WellListBox,'String'));
+%[Filename,Folder,Type]=uiputfile('*.xlsx','Save Mutant Fractions');
+
+Variable='X';
+values=GetPeakValue(handles.Result,Variable);
+val_names = repmat('values',[9,1]);
+val_names = join([char(val_names),string(('1':'9')')],'_');
+col_names = repmat(join(['t_',handles.Result.fileName]),[length(Wells),1]);
+col_names = join([col_names,string(Wells)],'_');
+%col_names = cellstr('Wells',col_names);
+T=array2table(values,'RowNames',col_names,'VariableNames',val_names);
+locdir = cd;
+try
+[Filename,Folder,Type]=uigetfile('*.csv','Save Peaks');
+data = readtable(Filename,'ReadVariableNames',true);
+
+if height(data)<11
+    data = transposeTable(data);
+end
+data.Properties.RowNames = data.(1);
+data.(1) =[];
+data = [data;T];
+catch
+[Filename,Folder,Type]=uiputfile('train_data.csv','Save Peaks',handles.Result.fileName);
+data = T;
+end
+%data = transposeTable(data);
+data = sortrows(data,'RowNames','ascend');
+cd(Folder);
+writetable(data,Filename);
+cd(locdir);
+UpdateCurrentWell(handles);
+UpdateScoringInterface(handles);
+
+
+function file_name_edit_Callback(hObject, eventdata, handles)
+% hObject    handle to file_name_edit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of file_name_edit as text
+%        str2double(get(hObject,'String')) returns contents of file_name_edit as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function file_name_edit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to file_name_edit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end

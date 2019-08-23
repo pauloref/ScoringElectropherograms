@@ -155,10 +155,11 @@ function OpenFolder_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 FolderName=uigetdir(); %Ask the user for the folder to open
-
+text_folder = join([FolderName,'/text']);
+handles.DirName = FolderName;
 %call the function that reads a directory and outputs a list of wells
 %The WellList is stored in handles.Project 
-handles.Project=ReadStandardFolder(FolderName);
+handles.Project=ReadStandardFolder(text_folder);
 
 guidata(hObject,handles); %Save the handle
 
@@ -167,7 +168,6 @@ guidata(hObject,handles); %Save the handle
 %We now update the listbox WellList to contain the name of all the wells
 %that were used and set the Signal and Standard channels to the ones that
 %are chosen.
-set(handles.FileName,'String',handles.Project.FileName);
 set(handles.WellList,'String',handles.Project.WellNames);
 set(handles.StandardChannel,'Value',handles.Project.Standard)
 set(handles.SignalChannel,'Value',handles.Project.Signal)
@@ -470,7 +470,7 @@ ScoreFunctions=cellstr(get(handles.ScoringFunction,'String'));
 ScoreFunction=str2func(ScoreFunctions{get(handles.ScoringFunction,'Value')});
 %We create an object of type Score, called Result, from the data taken from
 %the project
-Result=Score(handles.Project);
+Result=Score(handles.Project,handles.DirName);
 %And we score the Result calling the function DefaultScore that itself will
 %call upon the specific scoring function
 Result.DefaultScore(ScoreFunction,Distances,baseline,cutoff,wavelet,waveletthreshold);

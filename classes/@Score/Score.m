@@ -12,6 +12,7 @@ classdef Score < handle
         StandardPeaks %A matrix of peaks containing the Standard Peaks
         SignalPeaks %A matrix of peaks containing the Signal Peaks
         MutantFraction %A list of cells containig the matrixes for the mutant fraction
+        fileName %A string with the name of the file
     end
     
     properties (Dependent = true )
@@ -23,7 +24,7 @@ classdef Score < handle
     methods
         
         %We first deine a default constructor
-        function obj=Score(welllist)
+        function obj=Score(welllist,fileName)
             obj.WellList=welllist;
             obj.ScoreStatus=zeros(1,welllist.N);
             obj.PeakNumbers=zeros(1,welllist.N);
@@ -31,6 +32,18 @@ classdef Score < handle
             obj.SignalPeaks=cell(1,welllist.N);
             obj.StandardPeaks=cell(1,welllist.N);
             obj.MutantFraction=cell(1,welllist.N);
+            try
+                if ismac
+                    fileName = split(fileName,'/');
+                else 
+                    fileName = split(fileName,'\');
+                end
+                fileName = fileName(end);
+                fileName = parse_name (fileName);
+                obj.fileName = fileName(3:end); %remove the t_ put due to var. name
+            catch
+                obj.fileName = "unspecified file name";
+            end
         end
         
         %and define a default score method. This method is resposible for
@@ -165,7 +178,7 @@ classdef Score < handle
             %is actualy the length of the WellList-by-maximum number of
             %peaks
             PeakV=zeros(obj.WellList.N,9);
-            for k = [obj.WellList.WellList{:}]%we loop through each well
+            for k = string(split(strjoin(obj.WellList.WellList),' '))'%we loop through each well
                 i=obj.WellList.wellNumber((k)); %and find out the well number
                 for j=1:length(obj.SignalPeaks{i})
                     PeakV(i,j)=get(obj.SignalPeaks{i}{j},Value);

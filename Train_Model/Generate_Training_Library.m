@@ -1,7 +1,7 @@
 %% Generate training data for peaks
 curdir = cd;
 cd ..
-cd('TargetScores');
+cd('TargetScores/geltesting');
 filedir = cd;
 genpath(pwd);
 target_file_dir = ls;
@@ -22,13 +22,10 @@ for file = target_files'
     data = readtable(file);
     name = split(file,'.csv');
     name = name(1);
-    name = strjoin(['t',name]);
-    name = replace(name,'.','_');
-    name = replace(name,' ','_');
-    name = replace(name,'-','_');
+    name = parse_name(name);
     name = repmat(name,[height(data),1]);
-    name = [name,string(data.(1))];
-    data.(1) = join(name,'_');
+    name = join([name,string(data.(1))],'_');
+    data.(1) = name;
     data.Properties.VariableNames{1} = 'Wells';
     if j ==1
        T_total = data; 

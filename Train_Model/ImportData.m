@@ -3,8 +3,8 @@ start_path = 'C:\Users\danie\REM Analytics Dropbox\EPFL_Lab\Megabace1000_data\';
 folders = uigetdir2(start_path);
 total_size = 96*length(folders);
 curdir = cd;
-start = 1601;
-last = 2701;
+start = 1501;
+last = 2801;
 for i=1:length(folders)
     title = split(folders{i},'\');
     title = title(end);
@@ -30,12 +30,9 @@ for i=1:length(folders)
         end
         j=j+1;
         content = importdata(file.name);
-        ID = strjoin(string(['t',title,file.name]),'_');
-        ID = split(ID,'.txt');
-        ID = ID(1);
-        ID = replace(ID,'-','_');
-        ID = replace(ID,' ','_');
-        ID = replace(ID,'.','_');
+        ID = parse_name(title);
+        well_id =split(file.name,'.txt'); well_id = well_id(1);
+        ID = strjoin([ID,well_id],'_');
         signal = content.data(:,[1,5]);
         if (j==1 && i==1)
             T_total = array2table(signal(start:min(size(signal,1),last),:),'VariableNames',{'time',char(ID)});
