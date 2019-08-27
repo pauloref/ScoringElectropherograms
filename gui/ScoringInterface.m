@@ -549,7 +549,7 @@ data.Properties.RowNames = data.(1);
 data.(1) =[];
 data = [data;T];
 catch
-[Filename,Folder,Type]=uiputfile('train_data.csv','Save Peaks',handles.Result.fileName);
+[Filename,Folder,Type]=uiputfile('target_data.csv','Save Peaks',handles.Result.fileName);
 data = T;
 end
 %data = transposeTable(data);
