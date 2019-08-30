@@ -62,9 +62,11 @@ classdef Score < handle
             %this function will attempt to return the mutant fraction in
             %each well. The size of the output will depend on the number of
             %mutants identified in the well.
-           
-            
+            if ismac
+                list = [obj.WellList.WellList{:}];
+            else
                 list = string(split(strjoin(obj.WellList.WellList),' '));
+            end
             
             for k = list'%we loop through each well
                 i=obj.WellList.wellNumber((k)); %and find out the well number

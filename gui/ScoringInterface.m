@@ -555,7 +555,7 @@ end
 %data = transposeTable(data);
 data = sortrows(data,'RowNames','ascend');
 cd(Folder);
-writetable(data,Filename);
+writetable(data,Filename,'WriteRowNames',true);
 cd(locdir);
 UpdateCurrentWell(handles);
 UpdateScoringInterface(handles);

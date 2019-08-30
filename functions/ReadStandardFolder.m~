@@ -20,8 +20,8 @@ else
     welllist=regexp(string(cellstr(output_str)'),'([ABCDEFGH]\d+).txt','tokens');
     filelist=regexp(string(cellstr(output_str)'),'([ABCDEFGH]\d+).txt','match');
     [val,idx] = sort(cellstr(welllist));
-    welllist = cellstr([welllist{idx}]);
-    filelist = filelist(idx);
+    welllist = [welllist{idx}];
+    filelist = [filelist{idx}];
     
     
 end

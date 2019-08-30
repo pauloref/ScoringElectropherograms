@@ -58,8 +58,11 @@ classdef WellGroup
         function Well = returnWell(obj,well)
             %obj.returnWell allows the wells to be returned by calling
             %their names
-            
+            if ismac
+                Well=obj.Wells(strcmp([obj.WellList{:}],well));
+            else
                 Well = obj.Wells(find(ismember(obj.WellList,well)));
+            end
             end
         
         
