@@ -533,15 +533,15 @@ Variable='X';
 values=GetPeakValue(handles.Result,Variable);
 val_names = repmat('values',[9,1]);
 val_names = join([char(val_names),string(('1':'9')')],'_');
-col_names = repmat(join(['t_',handles.Result.fileName]),[length(Wells),1]);
-col_names = join([col_names,string(Wells)],'_');
+%row_names = repmat(join(['t_',handles.Result.fileName]),[length(Wells),1]);
+row_names = repmat(handles.Result.fileName,[length(Wells),1]);
+row_names = join([row_names,string(Wells)],'_');
 %col_names = cellstr('Wells',col_names);
-T=array2table(values,'RowNames',col_names,'VariableNames',val_names);
+T=array2table(values,'RowNames',row_names,'VariableNames',val_names);
 locdir = cd;
 try
 [Filename,Folder,Type]=uigetfile('*.csv','Save Peaks');
-data = readtable(Filename,'ReadVariableNames',true);
-
+data = readtable(Filename,'ReadRowNames',true,'ReadVariableNames',true);
 if height(data)<11
     data = transposeTable(data);
 end
@@ -549,13 +549,37 @@ data.Properties.RowNames = data.(1);
 data.(1) =[];
 data = [data;T];
 catch
-[Filename,Folder,Type]=uiputfile('target_data.csv','Save Peaks',handles.Result.fileName);
+[Filename,Folder,Type]=uiputfile(join([string(handles.Result.fileName),".csv"]),'Save Peaks');
 data = T;
 end
+
+
 %data = transposeTable(data);
 data = sortrows(data,'RowNames','ascend');
 cd(Folder);
 writetable(data,Filename,'WriteRowNames',true);
+% fprintf('Target data successfully saved. Now saving signal data. \n');
+% start = 1501; %% 15 min 
+% finish = 2698; %% ≈27 min
+% signal = handles.Result.WellList.SignalData(:,start:finish);
+% time = handles.Result.WellList.Wells(1).Read(start:finish);
+% col_names = repmat('t',[length(time),1]);
+% col_names = join([string(col_names),num2str(time)],'_')';
+% T = array2table(signal,'RowNames',row_names,'VariableNames',col_names);
+% 
+% try
+% [Filename,Folder,Type]=uigetfile('*.csv','Append Input Data to File');
+% data = readtable(Filename,'ReadVariableNames',true,'ReadRowNames',true); %% rows should be samples and columns 
+% data.Properties.RowNames = data.(1);
+% data.(1) =[];
+% data = [data;T];
+% catch
+% [Filename,Folder,Type]=uiputfile('input_data.csv','Create Input Data File',handles.Result.fileName);
+% data = T;
+% end
+% data = sortrows(data,'RowNames','ascend');
+% writetable(data,Filename,'WriteRowNames',true,'WriteVariableNames',true);
+fprintf('Input data successfully saved. Now saving signal data. \n');
 cd(locdir);
 UpdateCurrentWell(handles);
 UpdateScoringInterface(handles);
