@@ -40,7 +40,8 @@ classdef Score < handle
                 end
                 fileName = fileName(end);
                 fileName = parse_name (fileName);
-                obj.fileName = fileName(3:end); %remove the t_ put due to var. name
+                obj.fileName= fileName;
+                %obj.fileName = fileName(3:end); %remove the t_ put due to var. name
             catch
                 obj.fileName = "unspecified file name";
             end
