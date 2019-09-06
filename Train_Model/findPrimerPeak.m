@@ -11,16 +11,13 @@ location = zeros(N,1);
 for i = 1:N
 [PKS,locs,W,P]=findpeaks(input_electropherogram(i,:),'MinPeakProminence',prominence_val);
 %findpeaks(input_electropherogram(i,:),'MinPeakProminence',prominence_val)
-if locs(1)>200
-    location(i) = findPrimerPeak(input_electropherogram(i,:),prominence_val/2);
-else
     locs = locs(W>3);
+    %locs = locs(PKS(W>3)<0.8); %primer peak has less than half of max
     if isempty(locs)
         location(i) = 1;
     else
         location(i) = locs(1);   
     end
-end
 end
 end
 

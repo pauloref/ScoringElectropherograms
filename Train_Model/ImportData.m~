@@ -43,11 +43,10 @@ for i=1:length(folders)
         ID = parse_name(title);
         well_id =split(file.name,'.txt'); well_id = well_id(1);
         ID = strjoin([ID,well_id],'_');
-        if length(content.data(:,1))< last
-            patch = zeros(last-size(content.data,1),size(content.data,2));
-            content.data = [content.data;patch];
-            content.data(:,1) = 0:last-1;
+        if length(content.data(:,1)< last)
+            
         end
+        last = min(last,length(content.data(:,1)));
         time = repmat('t',[length(content.data(:,1)),1]);
         time = (join([string(time(start:last)),(num2str(content.data(start:last,1)))],'_'));
         

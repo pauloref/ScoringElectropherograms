@@ -8,6 +8,7 @@ peak_prominence = 0.05;
 window = 700;
 %% Data Parsing
 signal_array = table2array(input_table);
+signal_array = removeBaseline(signal_array,30);
 max_values = repmat(max((signal_array)')',[1,width(input_table)]);
 signal_array = signal_array./max_values;
 primer_names = char(input_table.Properties.RowNames);
@@ -25,7 +26,7 @@ for primer=unique(primer_names,'stable')'
     primer_idx = find(ismember(strtrim(primer_names),primer));
     for well= unique(strtrim(well_names),'stable')'
         k=k+1;
-        pair_idx = (mod(primer_idx(1),192)-1)*192+find(ismember(strtrim(well_names(primer_idx)),well)); %get index of wells
+        pair_idx = primer_idx(find(ismember(strtrim(well_names(primer_idx)),well))); %get index of wells
         output_ID = input_table.Properties.RowNames(pair_idx(2)); %% input table for 2nd run (higher T)
         signal_pairs = signal_array(pair_idx,:);
         offset_locs = findPrimerPeak(signal_pairs,peak_prominence); %use primer peak as offset
@@ -43,20 +44,22 @@ for primer=unique(primer_names,'stable')'
             T=array2table([output_signal,time_vals(offset_locs(2))],'RowNames',output_ID);
             aligned_signal = vertcat(aligned_signal,T);
         end
-        figure 
-        subplot(2,1,1)
-        plot (aligned_pairs(1,:))
-        hold on 
-        plot (aligned_pairs(2,:))
-        legend({'run1','run2'})
-        subplot(2,1,2)
-        plot(output_signal)
-        legend({'output'})
-        title(join([primer,well],'_'),'Interpreter','None')
-        hold off
+%         figure 
+%         subplot(2,1,1)
+%         plot (aligned_pairs(1,:),'color','blue')
+%         hold on 
+%         plot (aligned_pairs(2,:),'color','red')
+%         legend({'run1','run2'})
+%         subplot(2,1,2)
+%         plot(output_signal,'color','red')
+%         legend({'output'})
+%         title(join([primer,well],'_'),'Interpreter','None')
+%         hold off
         
     end
     
+    
 end
+aligned_signal.Properties.VariableNames(end) = {'primer_peak_location'};
 
 

@@ -207,7 +207,7 @@ function SavePeaks_Callback(hObject, eventdata, handles)
 %file.
 Wells=cellstr(get(handles.WellListBox,'String'));
 %[Filename,Folder,Type]=uiputfile('*.xlsx','Save Mutant Fractions');
-[Filename,Folder,Type]=uiputfile('*.xlsx','Save Peaks',handles.Result.fileName);
+[Filename,Folder,Type]=uiputfile('*.xlsx','Save Peaks',string(handles.Result.fileName));
 locdir=cd;
 cd(Folder);
 Variables={'X','Y','Area'};
@@ -542,11 +542,6 @@ locdir = cd;
 try
 [Filename,Folder,Type]=uigetfile('*.csv','Save Peaks');
 data = readtable(Filename,'ReadRowNames',true,'ReadVariableNames',true);
-if height(data)<11
-    data = transposeTable(data);
-end
-data.Properties.RowNames = data.(1);
-data.(1) =[];
 data = [data;T];
 catch
 [Filename,Folder,Type]=uiputfile(join([string(handles.Result.fileName),".csv"]),'Save Peaks');
@@ -579,7 +574,7 @@ writetable(data,Filename,'WriteRowNames',true);
 % end
 % data = sortrows(data,'RowNames','ascend');
 % writetable(data,Filename,'WriteRowNames',true,'WriteVariableNames',true);
-fprintf('Input data successfully saved. Now saving signal data. \n');
+fprintf('Input data successfully saved. \n');
 cd(locdir);
 UpdateCurrentWell(handles);
 UpdateScoringInterface(handles);
