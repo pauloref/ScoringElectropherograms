@@ -29,7 +29,7 @@ for i=2:length(input_table.Properties.RowNames)
         end
             try
                peak_data(k,1:actual_window) = input_table{i,LOC-window_size:LOC+window_size};
-               time_val(k) = time_table{i,LOC};
+               time_val(k) = time_table(i,LOC);
                k=k+1;
             catch
                 warning('window is out of bounds');
