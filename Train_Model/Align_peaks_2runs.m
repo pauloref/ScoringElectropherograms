@@ -44,17 +44,17 @@ for primer=unique(primer_names,'stable')'
             T=array2table([output_signal,time_vals(offset_locs(2))],'RowNames',output_ID);
             aligned_signal = vertcat(aligned_signal,T);
         end
-%         figure 
-%         subplot(2,1,1)
-%         plot (aligned_pairs(1,:),'color','blue')
-%         hold on 
-%         plot (aligned_pairs(2,:),'color','red')
-%         legend({'run1','run2'})
-%         subplot(2,1,2)
-%         plot(output_signal,'color','red')
-%         legend({'output'})
-%         title(join([primer,well],'_'),'Interpreter','None')
-%         hold off
+        figure 
+        subplot(2,1,1)
+        plot (aligned_pairs(1,:),'color','blue')
+        hold on 
+        plot (aligned_pairs(2,:),'color','red')
+        legend({'run1','run2'})
+        subplot(2,1,2)
+        plot(output_signal,'color','red')
+        legend({'output'})
+        title(join([primer,well],'_'),'Interpreter','None')
+        hold off
         
     end
     
