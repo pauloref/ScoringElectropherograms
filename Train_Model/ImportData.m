@@ -40,9 +40,10 @@ for i=1:length(folders)
         end
         j=j+1;
         content = importdata(file.name);
-        ID = parse_name(title);
         well_id =split(file.name,'.txt'); well_id = well_id(1);
+        [ID,info_table] = parse_name(title,well_id);
         ID = strjoin([ID,well_id],'_');
+        info_table.Properties.RowNames = ID;
         if length(content.data(:,1))< last
             patch = zeros(last-size(content.data,1),size(content.data,2));
             content.data = [content.data;patch];
@@ -54,14 +55,19 @@ for i=1:length(folders)
         signal = content.data(:,5);
         if (j==1 && i==1)
             T_total = array2table(signal(start:min(size(signal,1),last),:)','RowNames',string(ID),'VariableNames',time);
+            T_total = [info_table,T_total];
         else
             tab = array2table(signal(start:min(size(signal,1),last),:)','RowNames',string(ID),'VariableNames',time);
+            tab = [info_table,tab];
             T_total = vertcat(T_total,tab);
         end
     end
     %
     
 end
+T_total.Th = str2double(T_total.Th);
+T_total.Tl = str2double(T_total.Tl);
+T_total = sortrows(T_total,'RowNames','ascend');
 writetable(T_total,strjoin(string([filename,'.csv'])),'WriteRowNames',true,'WriteVariableNames',true);
 %%
 

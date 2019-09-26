@@ -13,17 +13,18 @@ Distances=(Distances-Distances(1));
 
 
 
-
 window=round(min(diff(Distances))/1.5-1);
 for k=[obj.WellList.WellList{:}]
     i=obj.WellList.wellNumber(k);
     
     %We begin by initializing the peak position and height that will be
     %assigned as matrixes 4 by two filed with zeros.
-    PeakPos=zeros(4,2);
-    SigPeak=zeros(4,2);
+    PeakPos={Peak(0,0)};
+    SigPeak={Peak(0,0)};
     obj.SignalPeaks{i}=SigPeak;
     obj.StandardPeaks{i}=PeakPos;
+    
+    %
     
     %We use the matlab implemented function to analyze all peaks present
     [pks, loc, width, proem]=findpeaks(CutStandard(i,:));

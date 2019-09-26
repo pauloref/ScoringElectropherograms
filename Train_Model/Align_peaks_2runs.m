@@ -5,21 +5,17 @@ function aligned_signal = Align_peaks_2runs(input_table)
 close all
 %% Parameters
 peak_prominence = 0.05;
-window = 700;
+window = 1000;
 %% Data Parsing
-signal_array = table2array(input_table);
+
+signal_array = table2array(input_table(:,7:end));
 signal_array = removeBaseline(signal_array,30);
-max_values = repmat(max((signal_array)')',[1,width(input_table)]);
+max_values = repmat(max((signal_array)')',[1,size(signal_array,2)]);
 signal_array = signal_array./max_values;
-primer_names = char(input_table.Properties.RowNames);
-well_names = char(strtrim(string(primer_names)));
-well_names = string(well_names(:,end-7:end));
-well_names = split(well_names,'_');
-well_names = well_names(:,end);
-primer_names = split(string(primer_names(:,1:20)),'_');
-primer_names = join([primer_names(:,2),primer_names(:,3)],'-'); 
-aligned_pairs = zeros(2,701);
-time_vals = split(string(input_table.Properties.VariableNames),'t_');
+primer_names = input_table.primer_ID;
+well_names = input_table.well;
+aligned_pairs = zeros(2,window+1);
+time_vals = split(string(input_table.Properties.VariableNames(7:end)),'t_');
 time_vals = str2double(time_vals(:,:,2));
 k=0;
 for primer=unique(primer_names,'stable')'
@@ -31,8 +27,8 @@ for primer=unique(primer_names,'stable')'
         signal_pairs = signal_array(pair_idx,:);
         offset_locs = findPrimerPeak(signal_pairs,peak_prominence); %use primer peak as offset
         try
-        aligned_pairs(1,:) = signal_pairs(1,offset_locs(1):offset_locs(1)+700);
-        aligned_pairs(2,:) = signal_pairs(2,offset_locs(2):offset_locs(2)+700);
+        aligned_pairs(1,:) = signal_pairs(1,offset_locs(1):offset_locs(1)+window);
+        aligned_pairs(2,:) = signal_pairs(2,offset_locs(2):offset_locs(2)+window);
         catch
             continue
         end

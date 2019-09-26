@@ -1,49 +1,87 @@
-function peak_data = generatePeakData(input_table,output_table,time_table,window_size,prominence)
+function [peak_data,labels] = generatePeakData_2runs(input_table,output_table,window_size,prominence,output_type)
 %generatePeakData Gathers electropherogram data, extracts potential peaks
 %and creates table with peak and corresponding label (1 if peak and 0 if
 %false peak)
+%output_type corresponds to format of final output. Can be a flat vector or
+%a 2xwindow_size array
 %   Detailed explanation goes here
 if nargin<5
-    prominence=1000;
+    prominence=0.025;
+end    
+actual_window = window_size*2+2; %signal data and location relative to primer peak
+if output_type == 1
+    peak_data = zeros(100000,1,2,actual_window);
+else
+    peak_data = zeros(100000,actual_window*2-1);
 end
-    
-actual_window = window_size*2+1;
-peak_data = zeros(100000,actual_window);
 labels = zeros(100000,1);
-time_val = zeros(100000,1);
-time_vector = input_table.(1);
-k=1;
-for i=2:length(input_table.Properties.VariableNames)
-    %if ~any(output_table.(i)~=0)
-    %    continue;
-    %else
-    [PKS,LOCS,W,P] = findpeaks(input_table.(i),'MinPeakProminence',prominence);
-    %findpeaks(input_table.(i),'MinPeakProminence',prominence)
+signal_array = table2array(input_table(:,7:end));
+%% Data Preprocessing
+%remove baseline
+signal_array = removeBaseline(signal_array,30);
+% normalize with respect to max peak
+max_values = repmat(max((signal_array)')',[1,size(signal_array,2)]); 
+signal_array = signal_array./max_values; 
+%apply moving average filter
+%signal_array = movmean(signal_array,5); 
+%% Parsing table fields
+primer_names = input_table.primer_ID;
+well_names = input_table.well;
+time_vals = split(string(input_table.Properties.VariableNames(7:end)),'t_');
+time_vals = str2double(time_vals(:,:,2));
+k=1; % index of peak data
+for row_name=(output_table.Properties.RowNames')
+    sample_idx = find(ismember(input_table.Properties.RowNames,row_name));
+    label_idx = find(ismember(output_table.Properties.RowNames,row_name));
+    primer = input_table.primer_ID(sample_idx);
+    well = input_table.well(sample_idx);
+    temperature = input_table.Th(sample_idx);
+    pair_idx = find(ismember(input_table.primer_ID,primer));
+    pair_idx = find(ismember(input_table.well(pair_idx),well));
+    pair_idx = pair_idx(~ismember(pair_idx,sample_idx));
+    pair_idx = pair_idx(1);
+    signal_pair = signal_array([sample_idx,pair_idx],:);
     
-    for j=1:length(LOCS)
-        LOC = LOCS(j);
-        if any(abs(time_vector(LOC)-output_table.(i))<3)
-            labels(k) = 1;
-        else 
-            labels(k) = 0;
+    %% Now we will find the peaks of our sample
+    [PKS,LOCS,W,P] = findpeaks(signal_pair(1,:),'MinPeakProminence',prominence);
+    noise_flag=0;
+    % Label each peak
+    for j = 1:length(LOCS)
+        if isempty(find(output_table{label_idx,:}))
+            break;
         end
-            try
-               peak_data(k,1:actual_window) = input_table.(i)(LOC-window_size:LOC+window_size);
-               time_val(k) = time_table.(i)(LOC);
-               k=k+1;
-            catch
-                warning('window is out of bounds');
-                continue;
-            end
-            
-    %end
+        LOC = LOCS(j);
+       if any(abs(time_vals(LOC)-output_table{label_idx,:})<3) %check if peak is in label list
+            labels(k) = 1; 
+       else
+           labels(k) = 0;
+       end
+       try
+           if output_type ==1 
+               peak_data(k,1,:,1:actual_window) = [[LOC;LOC],signal_pair(:,LOC-window_size:LOC+window_size)]; %put signal pairs at same window
+           else
+               peak_data(k,1:actual_window*2-1) = [LOC,signal_pair(1,LOC-window_size:LOC+window_size),signal_pair(2,LOC-window_size:LOC+window_size)]; %flatten signal
+           end
+           k = k+1;
+       catch
+           warning('window is out of bounds');
+           noise_flag= noise_flag+1;
+           continue;
+           
+       end
     end
-    
 end
-peak_data(k:end,:)=[];
+
+%aligned_signal.Properties.VariableNames(end) = {'primer_peak_location'};
+
 labels(k:end) = [];
-time_val(k:end) = [];
-peak_data=[peak_data,time_val,labels];
+if output_type==1
+    peak_data(k:end,:,:,:) = [];
+else
+    peak_data(k:end,:)=[];
+    peak_data=[peak_data,labels];
+end
+
 
 end
 
