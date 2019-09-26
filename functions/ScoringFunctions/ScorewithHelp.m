@@ -5,7 +5,7 @@ fileName = obj.fileName;
 Standard=obj.WellList.StandardData;
 Signal=obj.WellList.SignalData;
 time = obj.WellList.Wells(1,1).Read;
-model = load('trained_model_pfux7.mat');
+load('trained_model_pfux7.mat');
 % Standard(Standard<Threshold)=0;
 % CutStandard=Standard(:,CutOff:length(Standard));
 % Distances=(Distances-Distances(1));
@@ -37,11 +37,11 @@ for k=list'
         Ww = W(j);
         Pp = P(j); 
         time_val = LOC - primer_position;
-        peak_data(j,:) = [signal_array(i,LOC-window_size:LOC+window_size),PK,Ww,Pp,time_val];
+        peak_data(j,:) = [filtered_standard(i,LOC-window_size:LOC+window_size),PK,Ww,Pp,time_val];
     
     end
-    labels = model.predictFcn(peak_data);
-    peaks = LOCS(labels);
+    labels = trained_Model_pfux7.predictFcn(peak_data);
+    peaks = LOCS(find(labels));
     for n=1:length(peaks)
         pos = time(peaks(n));
         [a b]=PeakInSignal(Signal(i, (pos-Window):(pos+Window)));
