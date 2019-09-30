@@ -28,6 +28,9 @@ function [name,info_table] = parse_name (input_name,well)
         name = name(1:58);
         name = string(name);
     end
+    try
     info_table = array2table([date,primer,plate,temperatures(1),temperatures(2),well],'VariableNames',{'date','primer_ID','plate_ID','Th','Tl','well'});
+    catch
+    end
     name = string(name);
 end

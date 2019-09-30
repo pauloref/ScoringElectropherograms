@@ -7,8 +7,9 @@ function [peak_data,labels] = generatePeakData_2runs(input_table,output_table,wi
 %   Detailed explanation goes here
 if nargin<5
     prominence=0.025;
+    output_type = 2;
 end    
-actual_window = window_size*2+2; %signal data and location relative to primer peak
+actual_window = window_size*2+1+2; %signal data and location relative to primer peak
 if output_type == 1
     peak_data = zeros(100000,1,2,actual_window);
 else
@@ -21,7 +22,8 @@ signal_array = table2array(input_table(:,7:end));
 signal_array = removeBaseline(signal_array,30);
 % normalize with respect to max peak
 max_values = repmat(max((signal_array)')',[1,size(signal_array,2)]); 
-signal_array = signal_array./max_values; 
+signal_array = signal_array./max_values;
+primer_positions = findPrimerPeak(signal_array,prominence);
 %apply moving average filter
 %signal_array = movmean(signal_array,5); 
 %% Parsing table fields
@@ -44,28 +46,28 @@ for row_name=(output_table.Properties.RowNames')
     
     %% Now we will find the peaks of our sample
     [PKS,LOCS,W,P] = findpeaks(signal_pair(1,:),'MinPeakProminence',prominence);
-    noise_flag=0;
+    if check_blank(LOCS,W)
+        continue;
+    end
     % Label each peak
     for j = 1:length(LOCS)
-        if isempty(find(output_table{label_idx,:}))
-            break;
-        end
-        LOC = LOCS(j);
-       if any(abs(time_vals(LOC)-output_table{label_idx,:})<3) %check if peak is in label list
+       LOC = LOCS(j);
+       Ww = W(j);
+       Pp = P(j);
+       if any(abs(1500+LOC-output_table{label_idx,:})<3) %check if peak is in label list
             labels(k) = 1; 
        else
            labels(k) = 0;
        end
        try
            if output_type ==1 
-               peak_data(k,1,:,1:actual_window) = [[LOC;LOC],signal_pair(:,LOC-window_size:LOC+window_size)]; %put signal pairs at same window
+               peak_data(k,1,:,1:actual_window) = [[LOC-primer_positions(sample_idx);LOC-primer_positions(sample_idx)],signal_pair(:,LOC-window_size:LOC+window_size)]; %put signal pairs at same window
            else
-               peak_data(k,1:actual_window*2-1) = [LOC,signal_pair(1,LOC-window_size:LOC+window_size),signal_pair(2,LOC-window_size:LOC+window_size)]; %flatten signal
+               peak_data(k,1:actual_window*2-1) = [LOC-primer_positions(sample_idx),Ww,Pp,signal_pair(1,LOC-window_size:LOC+window_size),signal_pair(2,LOC-window_size:LOC+window_size)]; %flatten signal
            end
            k = k+1;
        catch
            warning('window is out of bounds');
-           noise_flag= noise_flag+1;
            continue;
            
        end

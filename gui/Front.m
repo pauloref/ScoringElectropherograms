@@ -419,7 +419,11 @@ function ScoringFunction_Callback(hObject, eventdata, handles)
 %        contents{get(hObject,'Value')} returns selected item from ScoringFunction
 CurentFolder=cd;
 cd('functions/ScoringFunctions');
+if ismac
 FunctionList=regexp(ls(),'\w*(?=.m)','match');
+else
+    FunctionList=regexp(string(ls()),'\w*(?=.m)','match');
+end
 set(hObject,'String',FunctionList);
 cd(CurentFolder)
 
@@ -470,7 +474,7 @@ waveletthreshold=str2double(get(handles.WaveletThreshold,'string'));
 Distances=[str2double(get(handles.Peak1,'string')) str2double(get(handles.Peak2,'string'))...
     str2double(get(handles.Peak3,'string')) str2double(get(handles.Peak4,'string'))];
 %We now identify which is the scoring fucntion that will be used
-SI=ScoringInterface;
+
 ScoreFunctions=cellstr(get(handles.ScoringFunction,'String'));
 ScoreFunction=str2func(ScoreFunctions{get(handles.ScoringFunction,'Value')});
 %We create an object of type Score, called Result, from the data taken from
@@ -482,7 +486,7 @@ Result.DefaultScore(ScoreFunction,Distances,baseline,cutoff,wavelet,waveletthres
 %We now save Result to be taken up by the scoring interface
 set(0,'userdata',Result)
 %We open the scoring interface
-
+SI=ScoringInterface;
 %guidata(SI,handles)
 
 

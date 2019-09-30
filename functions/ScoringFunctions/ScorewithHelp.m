@@ -5,14 +5,15 @@ fileName = obj.fileName;
 Standard=obj.WellList.StandardData;
 Signal=obj.WellList.SignalData;
 time = obj.WellList.Wells(1,1).Read;
-load('trained_model_pfux7.mat');
+load('model_tested_gels_v3.mat');
+model = model_tested_gels_v3;
 % Standard(Standard<Threshold)=0;
 % CutStandard=Standard(:,CutOff:length(Standard));
 % Distances=(Distances-Distances(1));
 
 
 
-%window=round(min(diff(Distances))/1.5-1);
+Window=round(min(diff(Distances))/1.5-1);
 
 list = string(split(strjoin(obj.WellList.WellList),' '));
 
@@ -28,7 +29,11 @@ for k=list'
     filtered_standard = removeBaseline(Signal(i,:),30);
     filtered_standard = filtered_standard/max(filtered_standard);
     primer_position = findPrimerPeak(filtered_standard,prominence);
+    
     [PKS, LOCS, W, P]=findpeaks(filtered_standard,'MinPeakProminence',prominence);
+    if check_blank(LOCS,W)
+        continue;
+    end
     peak_data = zeros(length(LOCS),window_size*2+1+4); %peak data, peak height, width, prominence, relative location to primer peak
     
     for j=1:length(LOCS)
@@ -36,28 +41,32 @@ for k=list'
         PK = PKS(j);
         Ww = W(j);
         Pp = P(j); 
-        time_val = LOC - primer_position;
-        peak_data(j,:) = [filtered_standard(i,LOC-window_size:LOC+window_size),PK,Ww,Pp,time_val];
+        time_val = 1500 + LOC - primer_position;
+        try
+        peak_data(j,:) = [filtered_standard(LOC-window_size:LOC+window_size),PK,Ww,Pp,time_val];
+        catch
+           continue; 
+        end
     
     end
-    labels = trained_Model_pfux7.predictFcn(peak_data);
+    labels = model.predictFcn(peak_data);
     peaks = LOCS(find(labels));
+    PeakPos = cell(1,length(peaks));
     for n=1:length(peaks)
         pos = time(peaks(n));
         [a b]=PeakInSignal(Signal(i, (pos-Window):(pos+Window)));
         SignalPeaks(n,:)=[a b+pos-Window-1];
-        [a b]=PeakInSignal(Stadard(i,(pos-Window):(pos+Window)));
+        [a b]=PeakInSignal(Standard(i,(pos-Window):(pos+Window)));
         StandardPeaks(n,:)=[a b+pos-Window-1];
-        PeakPos={Peak(peaks(n),Signal(i,:))};
-        SigPeak={Peak(0,0)};
-        obj.SignalPeaks{i}=SigPeak;
-        obj.StandardPeaks{i}=PeakPos;
-        obj.ScoreStatus(i)=0;
+        PeakPos(n)={Peak(peaks(n),Signal(i,:))};        
     end
-    set(handles.StandardPeaks,'Data',StandardPeaks);
-    set(handles.SignalPeaks,'Data',SignalPeaks);
-    UpdateCurrentWell(handles);
-    UpdateScoringInterface(handles);
+    obj.SignalPeaks{i}=PeakPos;
+    obj.StandardPeaks{i}=PeakPos;
+    obj.ScoreStatus(i)=1;
+    %set(handles.StandardPeaks,'Data',StandardPeaks);
+    %set(handles.SignalPeaks,'Data',SignalPeaks);
+    %UpdateCurrentWell(handles);
+    %UpdateScoringInterface(handles);
     
 end
 
