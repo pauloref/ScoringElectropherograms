@@ -20,7 +20,7 @@ function [name,info_table] = parse_name (input_name,well)
     if isempty(plate)
         plate = 'platexx';
     end
-    temperatures = regexp(char(name),'(?<high>\d\d)[-](?<low>\d\d)','names');
+    temperatures = regexp(char(name),'[_](?<high>\d\d)[-](?<low>\d\d)','names');
     temperatures = [str2double(temperatures.high),str2double(temperatures.low)];
     name = replace(name,'-','_');
     if length(char(name))>58

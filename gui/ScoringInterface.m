@@ -22,7 +22,7 @@ function varargout = ScoringInterface(varargin)
 
 % Edit the above text to modify the response to help ScoringInterface
 
-% Last Modified by GUIDE v2.5 21-Aug-2019 11:26:08
+% Last Modified by GUIDE v2.5 21-Oct-2019 17:28:27
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -54,7 +54,11 @@ function ScoringInterface_OpeningFcn(hObject, eventdata, handles, varargin)
 
 % Choose default command line output for ScoringInterface
 handles.output = hObject;
-handles.Result=get(0,'userdata');
+if (isempty(varargin))
+    handles.Result=get(0,'userdata');
+end
+        
+
 handles.CurrentWell=1;
 % Update handles structure
 guidata(hObject, handles);
@@ -541,7 +545,7 @@ T=array2table(values,'RowNames',row_names,'VariableNames',val_names);
 locdir = cd;
 try
 [Filename,Folder,Type]=uigetfile('*.csv','Save Peaks');
-data = readtable(Filename,'ReadRowNames',true,'ReadVariableNames',true);
+data = readtable([Folder,Filename],'ReadRowNames',true,'ReadVariableNames',true);
 data = [data;T];
 catch
 [Filename,Folder,Type]=uiputfile(join([string(handles.Result.fileName),".csv"]),'Save Peaks');
@@ -600,3 +604,46 @@ function file_name_edit_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+
+% --- Executes on button press in pushbutton6.
+function pushbutton6_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton6 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+number_idx=[1:12:96,...
+            2:12:96,...
+            3:12:96,...
+            4:12:96,...
+            5:12:96,...
+            6:12:96,...
+            7:12:96,...
+            8:12:96,...
+            9:12:96,...
+            10:12:96,...
+            11:12:96,...
+            12:12:96];
+letter_idx=[1:8:96,...
+            2:8:96,...
+            3:8:96,...
+            4:8:96,...
+            5:8:96,...
+            6:8:96,...
+            7:8:96,...
+            8:8:96];
+if strcmp(handles.Result.WellList.WellList{2},'A02')   %swap indeces
+    handles.Result.WellList.WellList = handles.Result.WellList.WellList(number_idx);
+    handles.Result.WellList.Wells = handles.Result.WellList.Wells(number_idx);
+    handles.Result.togglePeakScores(number_idx);
+else
+    handles.Result.WellList.WellList = handles.Result.WellList.WellList(letter_idx);
+    handles.Result.WellList.Wells = handles.Result.WellList.Wells(letter_idx);
+    handles.Result.togglePeakScores(letter_idx);
+end
+UpdateScoringInterface(handles);
+ScoringInterface_OpeningFcn(hObject, eventdata, handles,{2});
+
+
+
+
+    

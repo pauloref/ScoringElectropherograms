@@ -192,6 +192,11 @@ classdef Score < handle
             end
             
         end
+        function togglePeakScores(obj,idx)
+            % Function takes new indices to toggle score matrix
+            obj.SignalPeaks = obj.SignalPeaks(idx);
+            obj.StandardPeaks = obj.StandardPeaks(idx);
+        end
         
     end
     
