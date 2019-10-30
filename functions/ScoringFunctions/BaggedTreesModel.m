@@ -1,15 +1,13 @@
-function ScorewithHelp(obj,Distances,Threshold,CutOff,wavelet,WaveletThreshold)
-%A function that does not score. It simply returns all wells as not scored,
-%and all peaks as 0. 
+function BaggedTreesModel(obj,Distances,Threshold,CutOff,wavelet,WaveletThreshold)
+%Scores using bagged trees. Bagged Trees were trained with gel test, pfux7
+%and standard library signal input. 
+
 fileName = obj.fileName;
-Standard=obj.WellList.StandardData;
-Signal=obj.WellList.SignalData;
-time = obj.WellList.Wells(1,1).Read;
-load('BaggedTrees_w_20.mat');
+Standard=obj.WellList.StandardData; %get standard signal
+Signal=obj.WellList.SignalData; %get signal
+time = obj.WellList.Wells(1,1).Read; %get time
+load('BaggedTrees_w_20.mat'); % load model
 model = BaggedTrees_w_20;
-% Standard(Standard<Threshold)=0;
-% CutStandard=Standard(:,CutOff:length(Standard));
-% Distances=(Distances-Distances(1));
 
 
 
@@ -49,7 +47,7 @@ for k=list'
         end
     
     end
-    labels = model.predictFcn(peak_data);
+    labels = model.predictFcn(peak_data); %predict output from model
     peaks = LOCS(find(labels));
     PeakPos = cell(1,length(peaks));
     for n=1:length(peaks)
