@@ -5,8 +5,8 @@ fileName = obj.fileName;
 Standard=obj.WellList.StandardData;
 Signal=obj.WellList.SignalData;
 time = obj.WellList.Wells(1,1).Read;
-load('model_tested_gels_v3.mat');
-model = model_tested_gels_v3;
+load('BaggedTrees_w_20.mat');
+model = BaggedTrees_w_20;
 % Standard(Standard<Threshold)=0;
 % CutStandard=Standard(:,CutOff:length(Standard));
 % Distances=(Distances-Distances(1));
@@ -34,7 +34,7 @@ for k=list'
     if check_blank(LOCS,W)
         continue;
     end
-    peak_data = zeros(length(LOCS),window_size*2+1+4); %peak data, peak height, width, prominence, relative location to primer peak
+    peak_data = zeros(length(LOCS),window_size*2+1+3); %peak data, width, prominence, relative location to primer peak
     
     for j=1:length(LOCS)
         LOC = LOCS(j);
@@ -43,7 +43,7 @@ for k=list'
         Pp = P(j); 
         time_val = 1500 + LOC - primer_position;
         try
-        peak_data(j,:) = [filtered_standard(LOC-window_size:LOC+window_size),PK,Ww,Pp,time_val];
+        peak_data(j,:) = [filtered_standard(LOC-window_size:LOC+window_size),Ww,Pp,time_val];
         catch
            continue; 
         end

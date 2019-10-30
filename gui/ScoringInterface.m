@@ -271,7 +271,7 @@ switch eventdata.Key
         end
         
     case'rightarrow'
-        MF=1/10; %By what fraction of the axis length should it be mooved or scaled
+        MF=1/20; %By what fraction of the axis length should it be mooved or scaled
         Xlim=get(handles.axes1,'XLim');
         Xlength=Xlim(2)-Xlim(1);
         %If the shift buton is pressed, zoom in the axis, else move them to
@@ -282,7 +282,7 @@ switch eventdata.Key
         set(handles.axes1,'XLim',Xlim);
         
     case'leftarrow'
-        MF=1/10; %By what fraction of the axis length should it be mooved or scaled
+        MF=1/20; %By what fraction of the axis length should it be mooved or scaled
         Xlim=get(handles.axes1,'XLim');
         Xlength=Xlim(2)-Xlim(1);
         %If the shift button is pressed, zoom out of the axis, else move
