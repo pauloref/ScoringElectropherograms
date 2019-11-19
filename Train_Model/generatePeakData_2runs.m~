@@ -13,21 +13,19 @@ actual_window = window_size*2+1+2; %signal data and location relative to primer 
 if output_type == 1
     peak_data = zeros(100000,1,2,actual_window);
 else
-    peak_data = zeros(100000,actual_window+1);
+    peak_data = zeros(100000,actual_window*2-2);
 end
 labels = zeros(100000,1);
 signal_array = table2array(input_table(:,7:end));
 %% Data Preprocessing
-%apply moving average filter
-signal_array_old = signal_array;
-signal_array = movmean(signal_array',[5 0])'; 
 %remove baseline
 signal_array = removeBaseline(signal_array,30);
 % normalize with respect to max peak
 max_values = repmat(max((signal_array)')',[1,size(signal_array,2)]); 
 signal_array = signal_array./max_values;
 primer_positions = findPrimerPeak(signal_array,prominence);
-
+%apply moving average filter
+%signal_array = movmean(signal_array,5); 
 %% Parsing table fields
 primer_names = input_table.primer_ID;
 well_names = input_table.well;
@@ -49,18 +47,15 @@ for row_name=(output_table.Properties.RowNames')
     [PKS,LOCS,W,P] = findpeaks(signal_pair(1,:),'MinPeakProminence',prominence);
     [PKS2,LOCS2,W2,P2] = findpeaks(signal_pair(2,:),'MinPeakProminence',prominence);
     % check if data is a blank
-    if check_blank(LOCS,W) || check_blank(LOCS2,W2)
-        warning(string(join(['blank at ',row_name])));
+    if check_blank(LOCS,W)
         continue;
     end
     % align peaks
     D = Align_peaks(signal_pair(1,:),signal_pair(2,:),prominence);
     % Label each peak
     LOCS2 = LOCS2-D;
-    if D==0
-        idx1 = 1;
-        idx2 = 1;
-    elseif D<0
+    
+    if D<0
         idx1 = -D;
         idx2 = 1;
     else
@@ -76,11 +71,10 @@ for row_name=(output_table.Properties.RowNames')
     legend('signal1','signal2')
     pkinfo2 = [PKS2',LOCS2',W2',P2']; % store peak data as matrix for the second signal
     for j = 1:length(LOCS)
-       PK1 = PKS(j);
        LOC = LOCS(j);
        Ww = W(j);
        Pp = P(j);
-       pkinfo1 = [PK1,LOC,Ww,Pp];
+       pkinfo1 = [LOC,Ww,Pp];
        if any(abs(1500+LOC-output_table{label_idx,:})<3) %check if peak is in label list
             labels(k) = 1; 
        else
@@ -99,7 +93,7 @@ for row_name=(output_table.Properties.RowNames')
            if output_type ==1 
                peak_data(k,1,:,1:actual_window) = [[LOC-primer_positions(sample_idx);LOC-primer_positions(sample_idx)],signal_pair(:,LOC-window_size+D:LOC+window_size+D)]; %put signal pairs at same window
            else
-               peak_data(k,1:actual_window+1) = [LOC-primer_positions(sample_idx),LOC-LOC2,Ww,signal1]; %flatten signal
+               peak_data(k,1:actual_window*2-2) = [LOC-primer_positions(sample_idx),Ww,signal1,signal2]; %flatten signal
            end
            k = k+1;
        catch

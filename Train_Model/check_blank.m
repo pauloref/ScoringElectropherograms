@@ -4,7 +4,7 @@ function blank_flag = check_blank(LOCS,W)
 %distance between peaks
 %   Detailed explanation goes here
 blank_flag = false;
-if length(LOCS)>30 
+if length(LOCS)>20 
     blank_flag= true;
 end
 end
