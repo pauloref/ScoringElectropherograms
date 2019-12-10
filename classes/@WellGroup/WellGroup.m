@@ -1,5 +1,5 @@
 classdef WellGroup
-    %UNTITLED2 Summary of this class goes here
+    %WellGroup Contains list of wells, name of directory
     %   Detailed explanation goes here
     
     properties
@@ -20,26 +20,29 @@ classdef WellGroup
     methods
         %First we define a constructor class
         function obj=WellGroup(fileList,wellList,signal,standard)
-            switch(nargin)
-                case 1
-                    wellList=regexp(filelist,'.txt','split');
-                    signal = 2;
-                    standard=0;
-                case 2
-                    signal = 2;
-                    standard=0;
-                case 3
-                    standard=0;
+            if nargin
+                switch(nargin)
+                    
+                    case 1
+                        wellList=regexp(filelist,'.txt','split');
+                        signal = 2;
+                        standard=0;
+                    case 2
+                        signal = 2;
+                        standard=0;
+                    case 3
+                        standard=0;
+                end
+                obj.Wells=Well.empty;
+                
+                for i=1:length(fileList)
+                    obj.Wells(i)=Well(fileList{i});
+                end
+                
+                obj.WellList=wellList;
+                obj.Signal=signal;
+                obj.Standard=standard;
             end
-            obj.Wells=Well.empty;
-            
-            for i=1:length(fileList)
-                obj.Wells(i)=Well(fileList{i});
-            end
-            
-            obj.WellList=wellList;
-            obj.Signal=signal;
-            obj.Standard=standard;
         end
         
         

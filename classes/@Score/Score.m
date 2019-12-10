@@ -6,7 +6,8 @@ classdef Score < handle
     %This class needs to be a handle as it is going to be modifying itself
     %as the scoring proceeds.
     properties
-        WellList %The well list
+        WellList %The well list for first plate
+        WellList2 %The well list for second plate
         PeakNumbers %The number of peaks detected in each well
         ScoreStatus %A vector of booleans. If true the corresponding well has been scored
         StandardPeaks %A matrix of peaks containing the Standard Peaks
@@ -25,7 +26,12 @@ classdef Score < handle
         
         %We first deine a default constructor
         function obj=Score(welllist,fileName)
-            obj.WellList=welllist;
+            obj.WellList = welllist(1); %main run
+            if length(welllist)>1
+                obj.WellList2 = welllist(2); %second run
+            else
+                obj.WellList2 = [];
+            end
             obj.ScoreStatus=zeros(1,welllist.N);
             obj.PeakNumbers=zeros(1,welllist.N);
             %Peaks=cell(obj.WellList.N,1);
@@ -53,7 +59,6 @@ classdef Score < handle
         
         DefaultScore(obj,ScoreFunction,Distances,Threshold,CutOff,wavelet,WaveletThreshold)
         %We now define a function that returns the standard peaks by well
-        
         
         %We now define the functions that return the dependent properties
         %of a Score class object

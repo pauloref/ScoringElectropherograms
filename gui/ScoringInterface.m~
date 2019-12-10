@@ -462,7 +462,7 @@ function XPosition_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'Value') returns position of slider
 %        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
 %offset = get(hObject,'Value');
-offset = get(hObject,'Value')*1000-500;
+offset = get(hObject,'Value')*1000-;
 handles.offset = handles.OFFSET_CST + offset;
 guidata(hObject,handles);
 UpdateScoringInterface(handles);

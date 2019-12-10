@@ -2,14 +2,22 @@
 function D = Align_peaks(signal1,signal2,prominence)
 % function finds shift of displacement of 1 signal with respect to the other 
 % 
-
+if nargin<3
+    prominence=0.025;
+end
+if max(signal1)~=1
+    signal1 = signal1/max(signal1);
+end
+if max(signal2)~=1
+    signal2 = signal2/max(signal2);
+end
 
 [PKS1,LOCS1,W1] = findpeaks(signal1,'MinPeakProminence',prominence); 
 [PKS2,LOCS2,W2] = findpeaks(signal2,'MinPeakProminence',prominence);
-close all
-findpeaks(signal1,'MinPeakProminence',prominence)
-hold on 
-findpeaks(signal2,'MinPeakProminence',prominence)
+%close all
+%findpeaks(signal1,'MinPeakProminence',prominence)
+%hold on 
+%findpeaks(signal2,'MinPeakProminence',prominence)
 
 
 [~,max_idx1] = max(PKS1);
@@ -17,8 +25,8 @@ findpeaks(signal2,'MinPeakProminence',prominence)
 max_pkloc1 = LOCS1(max_idx1);
 max_pkloc2 = LOCS2(max_idx2);
 
-subsignal1 = signal1(1:max_pkloc1-floor(W1(max_idx1)));
-subsignal2 = signal2(1:max_pkloc2-floor(W2(max_idx2)));
+subsignal1 = signal1(1:max_pkloc1-max(floor(W1(max_idx1)),50));
+subsignal2 = signal2(1:max_pkloc2-max(floor(W2(max_idx2)),50));
 
 if (check_blank(LOCS1,W1) || check_blank(LOCS2,W2))
         D= 0;
