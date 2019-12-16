@@ -26,15 +26,15 @@ if (check_blank(LOCS1,W1) || check_blank(LOCS2,W2))
 end
 [~,~,D]=alignsignals(subsignal1,subsignal2,500);
 
-% if (D<0)
-%     %1st signal is early
-%     index1 = abs(D);
-%     index2 = 1;
-% 
-% else
-%     index1 = 1;
-%     index2 = D;
-% end
+if (D<0)
+    %1st signal is early
+    index1 = abs(D);
+    index2 = 1;
+
+else
+    index1 = 1;
+    index2 = D;
+end
 % plot(signal1(index1:end))
 % hold on 
 % plot(signal2(index2:end))
