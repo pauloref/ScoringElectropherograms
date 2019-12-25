@@ -14,6 +14,7 @@ classdef WellGroup
         SignalData %The matrix containing all the signals
         StandardData %The matrix containing all the Standards
         WellNames
+        FileName
     end
     
     

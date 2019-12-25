@@ -14,7 +14,7 @@ if output_type == 1
     peak_data = zeros(2,actual_window-1,1,100000);
     %peak_data(100000,1) = image;
 else
-    peak_data = zeros(100000,5);
+    peak_data = zeros(100000,(actual_window+1)*2-4);
 end
 labels = zeros(100000,1);
 signal_array = table2array(input_table(:,7:end));
@@ -69,13 +69,13 @@ for row_name=(output_table.Properties.RowNames')
         idx1 = 1;
         idx2 = D;
     end
-%     close all
-%     figure
-%     plot (signal_pair(1,idx1:end))
-%     hold on
-%     plot (signal_pair(2,idx2:end))
-%     hold off
-%     legend('signal1','signal2')
+    close all
+    figure
+    plot (signal_pair(1,idx1:end))
+    hold on
+    plot (signal_pair(2,idx2:end))
+    hold off
+    legend('signal1','signal2')
     pkinfo2 = [PKS2',LOCS2',W2',P2']; % store peak data as matrix for the second signal
     for j = 1:length(LOCS)
        PK1 = PKS(j);
@@ -93,17 +93,17 @@ for row_name=(output_table.Properties.RowNames')
            
            signal1 = signal_pair(1,LOC-window_size:LOC+window_size);
            signal2 = signal_pair(2,LOC-window_size+D:LOC+window_size+D);
-%            figure
-%            plot(signal1)
-%            hold on
-%            plot (signal2)
-%            hold off
+           figure
+           plot(signal1)
+           hold on
+           plot (signal2)
+           hold off
            max_loc = max(LOC,LOC2);
            if output_type ==1 
                %peak_data(k,1,:,1:actual_window-1) = image([[LOC-primer_positions(sample_idx);LOC2-primer_positions(pair_idx)],[signal1;signal2]]); %put signal pairs at same window
                peak_data(:,1:actual_window-1,1,k) = [[LOC/max_loc;LOC2/max_loc],[signal1;signal2]]; %put signal pairs at same window
            else
-               peak_data(k,1:5) = [LOC-primer_positions(j),LOC-LOC2+D,PK1,Ww,Ww2]; %flatten signal
+               peak_data(k,1:(actual_window+1)*2-4) = [LOC - primer_positions(j) - LOC2 + primer_positi,signal1,signal2]; %flatten signal
            end
            k = k+1;
        catch e
