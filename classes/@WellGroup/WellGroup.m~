@@ -60,9 +60,9 @@ classdef WellGroup
         function N = get.N(obj)
             N=length(obj.WellList);
         end
-%         function obj = set.FileName(obj,filename)
-%             obj.FileName=filename;
-%         end
+        function obj = set.FileName(obj,filename)
+            obj.FileName=filename;
+        end
         function Number = wellNumber(obj,well)
             Number=find(ismember(string(obj.WellList),well));
         end

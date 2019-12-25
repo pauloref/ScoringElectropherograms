@@ -61,11 +61,13 @@ end
 
 handles.CurrentWell=1;
 % Update handles structure
-guidata(hObject, handles);
+
 set(handles.WellListBox,'String',handles.Result.WellList.WellNames);
 set(handles.file_name_edit, 'String', handles.Result.fileName);
-handles.offset = 0;
-
+handles.OFFSET_CST = Align_peaks(handles.Result.WellList.SignalData(handles.CurrentWell,:)...
+                                       ,handles.Result.WellList2.SignalData(handles.CurrentWell,:));
+handles.offset = handles.OFFSET_CST;
+guidata(hObject, handles);
 % UIWAIT makes ScoringInterface wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
 

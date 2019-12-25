@@ -164,7 +164,7 @@ end
 text_folder = FolderNames+"/Text";
 %call the function that reads a directory and outputs a list of wells
 %The WellList is stored in handles.Project 
-handles.Project=ReadStandardFolders(text_folder);
+handles.Project=ReadStandardFolders(text_folder,FolderNames);
 
 guidata(hObject,handles); %Save the handle
 
@@ -484,7 +484,7 @@ ScoreFunctions=cellstr(get(handles.ScoringFunction,'String'));
 ScoreFunction=str2func(ScoreFunctions{get(handles.ScoringFunction,'Value')});
 %We create an object of type Score, called Result, from the data taken from
 %the project
-Result=Score(handles.Project);
+Result=Score(handles.Project,handles.DirName);
 %And we score the Result calling the function DefaultScore that itself will
 %call upon the specific scoring function
 Result.DefaultScore(ScoreFunction,Distances,baseline,cutoff,wavelet,waveletthreshold);

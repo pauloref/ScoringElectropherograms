@@ -8,8 +8,16 @@ end
 %   Detailed explanation goes here
 % initialize well group
 Output(2) = WellGroup;
+% get file names
+
 for i=1:length(Folders)
     Folder = Folders(i);
+    if ismac()
+        filename = split(Folder,'/');
+    else
+        filename = split(Folder,'\');
+    end
+    filename = filename(end-1);
     CurrentDir=cd;  %remember curent folder
     cd(Folder); %change to folder specified by user
     
@@ -33,7 +41,7 @@ for i=1:length(Folders)
     
     %We now use the constructor of the class WellGroup to create a well group
     %from all the text files that were present in the directory
-    Output(i)=WellGroup(filelist,welllist,Standard,Signal);
+    Output(i)=WellGroup(filelist,filename,welllist,Standard,Signal);
     
     cd(CurrentDir); %move back to the original directory
     %plot(handles.Project.StandardData');

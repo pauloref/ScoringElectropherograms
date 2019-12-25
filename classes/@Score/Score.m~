@@ -38,8 +38,19 @@ classdef Score < handle
             obj.SignalPeaks=cell(1,welllist.N);
             obj.StandardPeaks=cell(1,welllist.N);
             obj.MutantFraction=cell(1,welllist.N);
-            obj.fileName = obj.WellList.FileName;
-            
+            try
+                if ismac
+                    fileName = split(fileName,'/');
+                else 
+                    fileName = split(fileName,'\');
+                end
+                fileName = fileName(end);
+                fileName = parse_name (fileName);
+                obj.fileName= fileName;
+                %obj.fileName = fileName(3:end); %remove the t_ put due to var. name
+            catch
+                obj.fileName = "unspecified file name";
+            end
         end
         
         %and define a default score method. This method is resposible for
