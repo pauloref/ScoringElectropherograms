@@ -25,8 +25,8 @@ end
 max_pkloc1 = LOCS1(max_idx1);
 max_pkloc2 = LOCS2(max_idx2);
 
-subsignal1 = signal1(1:max_pkloc1-max(floor(W1(max_idx1)),50));
-subsignal2 = signal2(1:max_pkloc2-max(floor(W2(max_idx2)),50));
+subsignal1 = signal1(1:max_pkloc1-min(floor(W1(max_idx1)),50));
+subsignal2 = signal2(1:max_pkloc2-min(floor(W2(max_idx2)),50));
 
 if (check_blank(LOCS1,W1) || check_blank(LOCS2,W2))
         D= 0;

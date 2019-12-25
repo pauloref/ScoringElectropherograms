@@ -9,15 +9,25 @@ window = 1000;
 %% Data Parsing
 
 signal_array = table2array(input_table(:,7:end));
-signal_array = removeBaseline(signal_array,30);
-max_values = repmat(max((signal_array)')',[1,size(signal_array,2)]);
-signal_array = signal_array./max_values;
+
 primer_names = input_table.primer_ID;
 well_names = input_table.well;
 aligned_pairs = zeros(2,window+1);
 time_vals = split(string(input_table.Properties.VariableNames(7:end)),'t_');
 time_vals = str2double(time_vals(:,:,2));
 k=0;
+
+%% Preprocessing
+% smooth with Gaussian filter
+signal_array = smoothdata(signal_array,2,'gaussian',10);
+% remove any trends by fitting line and removing line. Any value under the
+% line is thresholded to 0.
+signal_array = removeBaseline(signal_array);
+% normalize by max value
+max_values = repmat(max((signal_array)')',[1,size(signal_array,2)]);
+signal_array = signal_array./max_values;
+
+%% Peak Extraction
 for primer=unique(primer_names,'stable')'
     primer_idx = find(ismember(strtrim(primer_names),primer));
     for well= unique(strtrim(well_names),'stable')'

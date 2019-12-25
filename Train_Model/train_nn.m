@@ -27,8 +27,8 @@ layers = [
     classificationLayer("Name","classoutput")];
 %[tr_set,te_set] = splitEachLabel(table(peak_data),size_nn,'randomize');
 if nargin<2
-x_tr = peak_data(:,1:end-1);
-y_tr = (peak_data(:,end));
+x_tr = peak_data;
+y_tr = labels;
 else
     x_tr = peak_data(:,1,:,2:end);
     y_tr = labels;
