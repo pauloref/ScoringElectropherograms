@@ -191,11 +191,11 @@ classdef Score < handle
             obj.StandardPeaks = obj.StandardPeaks(idx);
         end
         
-        function obj_out = toggleCurrentRun(obj)
+        function toggleCurrentRun(obj)
             % Function switches from wellist 1 to welllist 2
             % it will overwrite all peaks
            WellLists = [obj.WellList2,obj.WellList];
-           obj_out = Score(WellLists);
+           obj = Score(WellLists);
         end
         
     end

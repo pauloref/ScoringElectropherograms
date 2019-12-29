@@ -479,9 +479,9 @@ waveletthreshold=str2double(get(handles.WaveletThreshold,'string'));
 Distances=[str2double(get(handles.Peak1,'string')) str2double(get(handles.Peak2,'string'))...
     str2double(get(handles.Peak3,'string')) str2double(get(handles.Peak4,'string'))];
 %We now identify which is the scoring fucntion that will be used
-
 ScoreFunctions=cellstr(get(handles.ScoringFunction,'String'));
 ScoreFunction=str2func(ScoreFunctions{get(handles.ScoringFunction,'Value')});
+set(handles.ScoringFunction,'tag','scoringFunction') %where h is the handle of the slider
 %We create an object of type Score, called Result, from the data taken from
 %the project
 Result=Score(handles.Project);

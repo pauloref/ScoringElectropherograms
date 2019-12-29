@@ -13,9 +13,9 @@ Output(2) = WellGroup;
 for i=1:length(Folders)
     Folder = Folders(i);
     if ismac()
-        filename = split(Folder,"/");
+        filename = split(Folder,'/');
     else
-        filename = split(Folder,["/","\"]);
+        filename = regexp(Folder,'\ | /','split');
     end
     filename = filename(end-1);
     CurrentDir=cd;  %remember curent folder

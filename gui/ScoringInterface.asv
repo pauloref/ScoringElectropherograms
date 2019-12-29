@@ -691,27 +691,26 @@ switch answer
         %% Fetch current score function and parameters for scoring
         
         %First the baseline
+        
         baseline=str2double(get(findall(0,'tag','Baseline'),'string'));
         %Cuttoff
+        
         cutoff=str2double(get(findall(0,'tag','CutOff'),'string'));
         %We now read the function speciffic parameters
         %The text parameter
-        wavelet=get(findall(0,'tag','WaveletChoice'),'string');
-        
+        wavelet=get(get(findall(0,'tag','WaveletChoice'),'string'));
         %The additional numerical parameter
-        
-        waveletthreshold=str2double(get(findall(0,'tag','WaveletThreshold'),'string'));
+        waveletthreshold=str2double(get(handles.WaveletThreshold,'string'));
         %We now read the distances (when they are needed
-        Distances=[str2double(get(findall(0,'tag','Peak1'),'string')) str2double(get(findall(0,'tag','Peak2'),'string'))...
-            str2double(get(findall(0,'tag','Peak3'),'string')) str2double(get(findall(0,'tag','Peak4'),'string'))];
-        %Fetch Score function
+        Distances=[str2double(get(handles.Peak1,'string')) str2double(get(handles.Peak2,'string'))...
+            str2double(get(handles.Peak3,'string')) str2double(get(handles.Peak4,'string'))];
+        % Score function
         ScoreFunctionHandle = findall(0,'tag','scoringFunction');
         ScoreFunctions=cellstr(get(ScoreFunctionHandle,'String'));
         ScoreFunction=str2func(ScoreFunctions{get(ScoreFunctionHandle,'Value')});
         %% Score peaks
         handles.Result.DefaultScore(ScoreFunction,Distances,baseline,cutoff,wavelet,waveletthreshold);
         guidata(hObject,handles);
-        %% Call opening function
         ScoringInterface_OpeningFcn(hObject, eventdata, handles,1); % put non-empty varargin to use current handles
     case 'Cancel'
         
