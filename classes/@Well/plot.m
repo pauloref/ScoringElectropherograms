@@ -13,6 +13,6 @@ switch nargin
 end
 
 for i = channels
-    plot(Obj.Data(:,i),cols(i));
+    plot(Obj.Read,Obj.Data(:,i),cols(i));
 end
 end

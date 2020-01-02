@@ -6,12 +6,19 @@ function Plot2ndRun(handles)
 
 %If the standard peak marker is on, we plot standard peaks
 if(get(handles.Signal2On,'Value')&& ~isempty(handles.Result.WellList2))
-    Standard=handles.Result.WellList.Wells(handles.CurrentWell).Data(:,handles.Result.WellList.Signal);
-    Standard2 = handles.Result.WellList2.Wells(handles.CurrentWell).Data(:,handles.Result.WellList2.Signal);                         
-    x2 = [1:length(Standard2)] + handles.offset; % shift by offset set by sliding bar
+    Signal2 = handles.Result.WellList2.Wells(handles.CurrentWell).Data(:,handles.Result.WellList2.Signal);                         
+    Signal2(end) = NaN;
+    t2 = handles.Result.WellList2.Wells(handles.CurrentWell).Read - handles.offset;
+    % shift by offset set by sliding bar
     gca();
     hold on
-    plot(x2,Standard2)
+    alpha_values = ones(length(t2),1)*0.3;
+    patch(t2,Signal2,'blue','EdgeColor','blue',...
+    'FaceVertexAlphaData',alpha_values,'AlphaDataMapping','none',...
+    'EdgeAlpha','interp')
+    %s = plot(t2,Signal2,'b');
+    %alpha(s,.5);
+    
     
 
 end

@@ -99,10 +99,9 @@ for row_name=(output_table.Properties.RowNames')
 %            plot (signal2)
 %            hold off
            max_loc = max(LOC,LOC2);
-          
            if output_type ==1 
                %peak_data(k,1,:,1:actual_window-1) = image([[LOC-primer_positions(sample_idx);LOC2-primer_positions(pair_idx)],[signal1;signal2]]); %put signal pairs at same window
-               peak_data(:,1:actual_window-1,1,k) = [[(LOC-primer_positions(j))/(max_loc-primer_positions(j));(LOC2-primer_positions(pair_idx))/(max_loc-primer_positions(pair_idx))],[signal1;signal2]]; %put signal pairs at same window
+               peak_data(:,1:actual_window-1,1,k) = [[(LOC-primer_positions(j));LOC2-primer_positions(pair_idx)],[signal1;signal2]]; %put signal pairs at same window
            else
                peak_data(k,1:5) = [LOC-primer_positions(j),LOC-LOC2+D,PK1,Ww,Ww2]; %flatten signal
            end

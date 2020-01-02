@@ -12,29 +12,44 @@ if max(signal2)~=1
     signal2 = signal2/max(signal2);
 end
 
-[PKS1,LOCS1,W1] = findpeaks(signal1,'MinPeakProminence',prominence); 
-[PKS2,LOCS2,W2] = findpeaks(signal2,'MinPeakProminence',prominence);
+[PKS1,LOCS1,W1,P1] = findpeaks(signal1,'MinPeakProminence',prominence); 
+[PKS2,LOCS2,W2,P2] = findpeaks(signal2,'MinPeakProminence',prominence);
+[~,max_loc1] = max(PKS1);
+[~,max_loc2] = max(PKS2);
+if max_loc1 ==1
+    max_loc1 = 2;
+end
+if max_loc2 ==1
+    max_loc2 = 2;
+end
+    
+diff1 = PKS1(2:max_loc1) - PKS1(1:max_loc1-1);
+diff2 = PKS2(2:max_loc2) - PKS2(1:max_loc2-1);
 
-[~,max_idx1] = max(PKS1);
-[~,max_idx2] = max(PKS2);
 
+[~,piv1] = max(diff1); % take pivot point as peak with largest change relative to previous peaks
+[~,piv2] = max(diff2);
+piv1 = piv1 + 1; 
+piv2 = piv2 + 1;
 
+%[~,max_idx1] = max(PKS1);
+%[~,max_idx2] = max(PKS2);
+%subsignal1 = flattenPeaksToAlign(signal1,prominence);
+%subsignal2 = flattenPeaksToAlign(signal2,prominence);
 % close all
 % findpeaks(signal1,'MinPeakProminence',prominence)
 % hold on 
 % findpeaks(signal2,'MinPeakProminence',prominence)
  
  
-[~,max_idx1] = max(PKS1);
-[~,max_idx2] = max(PKS2);
-max_pkloc1 = LOCS1(max_idx1);
-max_pkloc2 = LOCS2(max_idx2);
+piv_pkloc1 = LOCS1(piv1);
+piv_pkloc2 = LOCS2(piv2);
 
 
-subsignal1 = signal1(1:max_pkloc1-min(floor(W1(max_idx1)),50));
-subsignal2 = signal2(1:max_pkloc2-min(floor(W2(max_idx2)),50));
+subsignal1 = signal1(1:piv_pkloc1-max(floor(W1(piv1)),30));
+subsignal2 = signal2(1:piv_pkloc2-max(floor(W2(piv2)),30));
 
-if (check_blank(LOCS1,W1) || check_blank(LOCS2,W2))
+if (isempty(subsignal1) || isempty(subsignal2))
     D= 0;
     return;
 end
