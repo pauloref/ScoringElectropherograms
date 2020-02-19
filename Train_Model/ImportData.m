@@ -1,11 +1,11 @@
-function T_total = ImportData(filename)
+function T_total = ImportData(filename,project_name)
 %% Script that allows user to select files containing Text directory in them. The output is a table 
 % with the time and signal of the wells in those files. 
 %start_path = 'C:\Users\danie\REM Analytics Dropbox\EPFL_Lab\Megabace1000_data\';
 folders = uigetdir2('/Users/danielpacheco/REM Analytics Dropbox/EPFL_Lab/Wet_Lab/Megabace1000_data/MBF15machine/54_primer_assay/');
 total_size = 96*length(folders);
 curdir = cd;
-start = 1501;
+start = 1200;
 last = 2698;
 for i=1:length(folders)
     if ismac
@@ -41,7 +41,7 @@ for i=1:length(folders)
         j=j+1;
         content = importdata(file.name);
         well_id =split(file.name,'.txt'); well_id = well_id(1);
-        [ID,info_table] = parse_name(title,well_id);
+        [ID,info_table] = parse_name(title,well_id,project_name);
         ID = strjoin([ID,well_id],'_');
         info_table.Properties.RowNames = ID;
         if length(content.data(:,1))< last

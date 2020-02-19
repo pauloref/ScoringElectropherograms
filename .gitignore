@@ -29,6 +29,7 @@
 # Output from testing #
 ###################
 *.xlsx
+PeakPrediction
 
 # OS generated files #
 ######################
@@ -41,3 +42,4 @@ ehthumbs.db
 Thumbs.db
 DataAlias/
 Output/
+.idea

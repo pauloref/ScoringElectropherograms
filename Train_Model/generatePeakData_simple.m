@@ -3,15 +3,31 @@ function peak_data = generatePeakData_simple(input_table,output_table,window_siz
 %and creates table with peak and corresponding label (1 if peak and 0 if
 %false peak)
 %   Detailed explanation goes here
+%% Argument parsing
+if nargin<2
+    output_table = [];
+end
+if nargin<3 
+    window_size = 30;
+end
 if nargin<4
     prominence=0.025;
 end
-signal_array = table2array(input_table(:,7:end));
-signal_array = removeBaseline(signal_array,30);
 
+%% Pre-processing
+signal_array = table2array(input_table(:,7:end));
+
+%% Preprocessing
+% smooth with Gaussian filter
+signal_array = smoothdata(signal_array,2,'gaussian',10);
+% remove any trends by fitting line and removing line. Any value under the
+% line is thresholded to 0.
+signal_array = removeBaseline(signal_array);
+% normalize by max value
 max_values = repmat(max((signal_array)')',[1,size(signal_array,2)]);
-signal_array = signal_array./max_values;    
+signal_array = signal_array./max_values;
 primer_positions = findPrimerPeak(signal_array,prominence);
+%% 
 actual_window = window_size*2+1+2; %adding prominence, width at the end
 peak_data = zeros(100000,actual_window);
 labels = zeros(100000,1);
@@ -20,7 +36,7 @@ time_vector = Var2Num(input_table.Properties.VariableNames(7:end));
 time_vector = linspace(time_vector(1),time_vector(end),width(input_table));
 k=1;
 
-for row_name=(output_table.Properties.RowNames')
+for row_name=(input_table.Properties.RowNames')
     %if ~any(output_table.(i)~=0)
     %    continue;
     %else
