@@ -1,0 +1,6 @@
+ {"_id":{"$oid":"5e53a746f4e99462354232ba"},
+"date":{"$date":{"$numberLong":"1603231200000"}},
+"file_name":"sample_folder1",
+"project_name":"corn",
+"plate_number":{"$numberInt":"1"},
+"signal":[{"$numberInt":"120"},{"$numberInt":"125"},{"$numberInt":"150"},{"$numberInt":"170"},{"$numberInt":"186"}]}

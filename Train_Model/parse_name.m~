@@ -12,12 +12,11 @@ function [name,info_cell] = parse_name (input_name,well,project_name)
     name = replace(name,' ','_');
     data = split(name,'_');
     date = string(data(1));
-    primer = string(data(2));
-    plate = (regexp(char(name),'[pP]late[-_]{0,1}(?<number>\d+)','names'));
+    plate = (regexp(char(name),'[pP]late[_-](?<number>\d+)','names'));
     if isempty(plate)
-        plate = struct('number','0');
+        plate = struct(number,'';
     end
-    temperatures = regexp(char(name),'[_](?<high>\d\d)[_-]{0,1}(?<low>\d\d)','names');
+    temperatures = regexp(char(name),'[_](?<high>\d\d)[-](?<low>\d\d)','names');
     if isempty(temperatures)
         temperatures = [0,0];
     else
@@ -31,7 +30,7 @@ function [name,info_cell] = parse_name (input_name,well,project_name)
     end
     try
     %info_table = array2table([date,project_name,plate,temperatures(1),temperatures(2),well],'VariableNames',{'date','project','plate_ID','Th','Tl','well'});
-    info_cell = cellstr([date,project_name,plate.number,temperatures(1),temperatures(2),well,primer]);
+    info_cell = cellstr([date,project_name,plate.number,temperatures(1),temperatures(2),well]);
     catch e
         fprintf(e.message);
     end
