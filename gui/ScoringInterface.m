@@ -559,14 +559,17 @@ row_names = join([row_names,string(Wells)],'_');
 %col_names = cellstr('Wells',col_names);
 T=array2table(values,'RowNames',row_names,'VariableNames',val_names);
 locdir = cd;
-try
-[Filename,Folder,Type]=uigetfile('*.csv','Save Peaks');
-data = readtable([Folder,Filename],'ReadRowNames',true,'ReadVariableNames',true);
-data = [data;T];
-catch
+% If we want to append to existing excel 
+
 [Filename,Folder,Type]=uiputfile(join([string(handles.Result.fileName),".csv"]),'Save Peaks');
 data = T;
-end
+%Get info from table
+
+%Add columns to table. Cast Strings to ints when necessary
+
+%Add signal data to tables
+
+%Push to DB
 
 
 %data = transposeTable(data);
