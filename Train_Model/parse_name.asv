@@ -12,22 +12,37 @@ function [name,info_table] = parse_name (input_name,well)
     name = replace(name,' ','_');
     data = split(name,'_');
     date = string(data(1));
-    primer = string(data(2));
-    if ~~ismember('-',primer)
+    
+    containsprimer = ismember('-',string(data(2)));
+    primer = '';
+    if (containsprimer)
+        primer = string(data(2));
+    end
+    project_primer = string(data(2));
+    %primer = string(data(2));
+    if ~~ismember('-',project_primer)
         primer = join([string(data(2)),string(data(3))],'-');
     end
-    plate = string(regexp(char(name),'plate\d+','match'));
+    plate = string(regexp(char(name),'plate_\d+','match'));
     if isempty(plate)
         plate = 'platexx';
     end
-    temperatures = regexp(char(name),'(?<high>\d\d)[-](?<low>\d\d)','names');
-    temperatures = [str2double(temperatures.high),str2double(temperatures.low)];
+    
+    temperatures = regexp(char(name),'[_](?<high>\d\d)[-](?<low>\d\d)','names');
+    if isempty(temperatures)
+        temperatures = [0,0];
+    else
+        temperatures = [str2double(temperatures.high),str2double(temperatures.low)];
+    end
     name = replace(name,'-','_');
     if length(char(name))>58
         name = char(name);
         name = name(1:58);
         name = string(name);
     end
-    %info_table = array2table([date,primer,plate,temperatures(1),temperatures(2),well],'VariableNames',{'date','primer_ID','plate_ID','Th','Tl','well'});
+    try
+    info_table = array2table([date,primer,plate,temperatures(1),temperatures(2),well],'VariableNames',{'date','primer_ID','plate_ID','Th','Tl','well'});
+    catch
+    end
     name = string(name);
 end

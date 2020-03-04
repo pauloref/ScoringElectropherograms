@@ -22,7 +22,7 @@ function varargout = ScoringInterface(varargin)
 
 % Edit the above text to modify the response to help ScoringInterface
 
-% Last Modified by GUIDE v2.5 21-Oct-2019 17:28:27
+% Last Modified by GUIDE v2.5 28-Dec-2019 22:11:13
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -61,9 +61,13 @@ end
 
 handles.CurrentWell=1;
 % Update handles structure
-guidata(hObject, handles);
+
 set(handles.WellListBox,'String',handles.Result.WellList.WellNames);
 set(handles.file_name_edit, 'String', handles.Result.fileName);
+handles.OFFSET_CST = Align_peaks(handles.Result.WellList.SignalData(handles.CurrentWell,:)...
+                                       ,handles.Result.WellList2.SignalData(handles.CurrentWell,:));
+handles.offset = handles.OFFSET_CST;
+guidata(hObject, handles);
 % UIWAIT makes ScoringInterface wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
 
@@ -93,6 +97,12 @@ function WellListBox_Callback(hObject, eventdata, handles)
 %called uppon by other buttons in the interface.
 contents = cellstr(get(hObject,'String'));
 handles.CurrentWell=handles.Result.WellList.wellNumber(contents{get(hObject,'Value')});
+
+if ~isempty(handles.Result.WellList2)
+    handles.OFFSET_CST = Align_peaks(handles.Result.WellList.SignalData(handles.CurrentWell,:)...
+                                       ,handles.Result.WellList2.SignalData(handles.CurrentWell,:));
+    handles.offset = handles.OFFSET_CST;
+end
 guidata(hObject,handles);
 %The interface is now updated.
 UpdateScoringInterface(handles);
@@ -453,6 +463,11 @@ function XPosition_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'Value') returns position of slider
 %        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
+%offset = get(hObject,'Value');
+offset = get(hObject,'Value')*1000-500;
+handles.offset = handles.OFFSET_CST + offset;
+guidata(hObject,handles);
+UpdateScoringInterface(handles);
 
 
 % --- Executes during object creation, after setting all properties.
@@ -462,6 +477,7 @@ function XPosition_CreateFcn(hObject, eventdata, handles)
 % handles    empty - handles not created until after all CreateFcns called
 
 % Hint: slider controls usually have a light gray background.
+
 if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor',[.9 .9 .9]);
 end
@@ -633,17 +649,84 @@ letter_idx=[1:8:96,...
             8:8:96];
 if strcmp(handles.Result.WellList.WellList{2},'A02')   %swap indeces
     handles.Result.WellList.WellList = handles.Result.WellList.WellList(number_idx);
+    handles.Result.WellList2.WellList = handles.Result.WellList2.WellList(number_idx);
     handles.Result.WellList.Wells = handles.Result.WellList.Wells(number_idx);
+    handles.Result.WellList2.Wells = handles.Result.WellList2.Wells(number_idx);
     handles.Result.togglePeakScores(number_idx);
 else
     handles.Result.WellList.WellList = handles.Result.WellList.WellList(letter_idx);
+    handles.Result.WellList2.WellList = handles.Result.WellList2.WellList(letter_idx);
     handles.Result.WellList.Wells = handles.Result.WellList.Wells(letter_idx);
+    handles.Result.WellList2.Wells = handles.Result.WellList2.Wells(letter_idx);
     handles.Result.togglePeakScores(letter_idx);
 end
 UpdateScoringInterface(handles);
 ScoringInterface_OpeningFcn(hObject, eventdata, handles,{2});
 
 
+    
+
+% --- Executes on button press in signal2on.
+function Signal2On_Callback(hObject, eventdata, handles)
+% hObject    handle to Signal2On (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+UpdateScoringInterface(handles);
+% Hint: get(hObject,'Value') returns toggle state of Signal2On
 
 
+% --- Executes on button press in swapPlatesButton.
+function swapPlatesButton_Callback(hObject, eventdata, handles)
+% hObject    handle to swapPlatesButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+% ask user if wants to override peak information
+answer = questdlg('If you change plates the peak data will be overriden. Want to continue?', ...
+	'Swap Plates', ...
+	'Yes','Cancel','Cancel');
+
+switch answer
+    case 'Yes'
+        handles.Result = handles.Result.toggleCurrentRun();
+        %% Fetch current score function and parameters for scoring
+        
+        %First the baseline
+        baseline=str2double(get(findall(0,'tag','Baseline'),'string'));
+        %Cuttoff
+        cutoff=str2double(get(findall(0,'tag','CutOff'),'string'));
+        %We now read the function speciffic parameters
+        %The text parameter
+        wavelet=get(findall(0,'tag','WaveletChoice'),'string');
+        
+        %The additional numerical parameter
+        
+        waveletthreshold=str2double(get(findall(0,'tag','WaveletThreshold'),'string'));
+        %We now read the distances (when they are needed
+        Distances=[str2double(get(findall(0,'tag','Peak1'),'string')) str2double(get(findall(0,'tag','Peak2'),'string'))...
+            str2double(get(findall(0,'tag','Peak3'),'string')) str2double(get(findall(0,'tag','Peak4'),'string'))];
+        %Fetch Score function
+        ScoreFunctionHandle = findall(0,'tag','scoringFunction');
+        ScoreFunctions=cellstr(get(ScoreFunctionHandle,'String'));
+        ScoreFunction=str2func(ScoreFunctions{get(ScoreFunctionHandle,'Value')});
+        %% Score peaks
+        handles.Result.DefaultScore(ScoreFunction,Distances,baseline,cutoff,wavelet,waveletthreshold);
+        guidata(hObject,handles);
+        %% Call opening function
+        ScoringInterface_OpeningFcn(hObject, eventdata, handles,1); % put non-empty varargin to use current handles
+    case 'Cancel'
+        
+        
+end
+
+% --- Executes on key press with focus on swapPlatesButton and none of its controls.
+function swapPlatesButton_KeyPressFcn(hObject, eventdata, handles)
+% hObject    handle to swapPlatesButton (see GCBO)
+% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.UICONTROL)
+%	Key: name of the key that was pressed, in lower case
+%	Character: character interpretation of the key(s) that was pressed
+%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% handles    structure with handles and user data (see GUIDATA)
+
+
+        
     

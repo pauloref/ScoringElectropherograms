@@ -6,7 +6,8 @@ classdef Score < handle
     %This class needs to be a handle as it is going to be modifying itself
     %as the scoring proceeds.
     properties
-        WellList %The well list
+        WellList %The well list for first plate
+        WellList2 %The well list for second plate
         PeakNumbers %The number of peaks detected in each well
         ScoreStatus %A vector of booleans. If true the corresponding well has been scored
         StandardPeaks %A matrix of peaks containing the Standard Peaks
@@ -24,27 +25,21 @@ classdef Score < handle
     methods
         
         %We first deine a default constructor
-        function obj=Score(welllist,fileName)
-            obj.WellList=welllist;
+        function obj=Score(welllist)
+            obj.WellList = welllist(1); %main run
+            if length(welllist)>1
+                obj.WellList2 = welllist(2); %second run
+            else
+                obj.WellList2 = [];
+            end
             obj.ScoreStatus=zeros(1,welllist.N);
             obj.PeakNumbers=zeros(1,welllist.N);
             %Peaks=cell(obj.WellList.N,1);
             obj.SignalPeaks=cell(1,welllist.N);
             obj.StandardPeaks=cell(1,welllist.N);
             obj.MutantFraction=cell(1,welllist.N);
-            try
-                if ismac
-                    fileName = split(fileName,'/');
-                else 
-                    fileName = split(fileName,'\');
-                end
-                fileName = fileName(end);
-                fileName = parse_name (fileName);
-                obj.fileName= fileName;
-                %obj.fileName = fileName(3:end); %remove the t_ put due to var. name
-            catch
-                obj.fileName = "unspecified file name";
-            end
+            obj.fileName = obj.WellList.FileName;
+            
         end
         
         %and define a default score method. This method is resposible for
@@ -53,7 +48,6 @@ classdef Score < handle
         
         DefaultScore(obj,ScoreFunction,Distances,Threshold,CutOff,wavelet,WaveletThreshold)
         %We now define a function that returns the standard peaks by well
-        
         
         %We now define the functions that return the dependent properties
         %of a Score class object
@@ -117,7 +111,6 @@ classdef Score < handle
                 end
             end
         end
-        
         function SPM=StandardPeakMatrix(obj,WellNumber)
             %a function that returns the Signal peaks in the Score. If the
             %well number is specified, it will return a matrix containing
@@ -196,6 +189,13 @@ classdef Score < handle
             % Function takes new indices to toggle score matrix
             obj.SignalPeaks = obj.SignalPeaks(idx);
             obj.StandardPeaks = obj.StandardPeaks(idx);
+        end
+        
+        function obj_out = toggleCurrentRun(obj)
+            % Function switches from wellist 1 to welllist 2
+            % it will overwrite all peaks
+           WellLists = [obj.WellList2,obj.WellList];
+           obj_out = Score(WellLists);
         end
         
     end

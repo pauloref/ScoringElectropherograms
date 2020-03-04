@@ -1,5 +1,5 @@
 classdef WellGroup
-    %UNTITLED2 Summary of this class goes here
+    %WellGroup Contains list of wells, name of directory
     %   Detailed explanation goes here
     
     properties
@@ -7,6 +7,7 @@ classdef WellGroup
         Signal   %The channel corresponding to the Signal in the group
         Standard %The channel corresponding to the Standard (if any)
         WellList %A list of the names of the wells in the Wells property
+        FileName
     end
     
     properties (Dependent = true )
@@ -14,32 +15,42 @@ classdef WellGroup
         SignalData %The matrix containing all the signals
         StandardData %The matrix containing all the Standards
         WellNames
+        
     end
     
     
     methods
         %First we define a constructor class
-        function obj=WellGroup(fileList,wellList,signal,standard)
-            switch(nargin)
-                case 1
-                    wellList=regexp(filelist,'.txt','split');
-                    signal = 2;
-                    standard=0;
-                case 2
-                    signal = 2;
-                    standard=0;
-                case 3
-                    standard=0;
+        function obj=WellGroup(fileList,filename,wellList,signal,standard)
+            if nargin
+                switch(nargin)
+                    
+                    case 1
+                        wellList=regexp(filelist,'.txt','split');
+                        signal = 2;
+                        standard=0;
+                        filename = 'nan';
+                    case 2
+                        wellList=regexp(filelist,'.txt','split');
+                        signal = 2;
+                        standard=0;
+                    case 3
+                        signal = 2;
+                        standard=0;
+                    case 4
+                        standard=0;
+                end
+                obj.Wells=Well.empty;
+                
+                for i=1:length(fileList)
+                    obj.Wells(i)=Well(fileList{i});
+                end
+                
+                obj.WellList=wellList;
+                obj.Signal=signal;
+                obj.Standard=standard;
+                obj.FileName = filename;
             end
-            obj.Wells=Well.empty;
-            
-            for i=1:length(fileList)
-                obj.Wells(i)=Well(fileList{i});
-            end
-            
-            obj.WellList=wellList;
-            obj.Signal=signal;
-            obj.Standard=standard;
         end
         
         
@@ -49,7 +60,7 @@ classdef WellGroup
         function N = get.N(obj)
             N=length(obj.WellList);
         end
-        
+%       
         function Number = wellNumber(obj,well)
             Number=find(ismember(string(obj.WellList),well));
         end
@@ -88,6 +99,10 @@ classdef WellGroup
             Names(i,:)=(obj.WellList{i});
             end
         end
+        
+%         function fileName = get.FileName(obj)
+%             fileName = obj.FileName;
+%         end
     end
     
 end

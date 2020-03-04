@@ -10,8 +10,11 @@ chans=ChanelsPossible(ChanelsSelected>0);
 cla;
 plot(handles.Result.WellList.Wells(handles.CurrentWell),chans);
 hold on
+%We now plot second run
+Plot2ndRun(handles);
 %We now plot the peaks
 PlotPeaks(handles);
+
 % 
 % if(get(handles.StandardPeaksOn,'Value') && handles.Result.ScoreStatus(handles.CurrentWell))
 %     SP=get(handles.StandardPeaks,'Data');%handles.Result.StandardPeaks{handles.CurrentWell};

@@ -91,8 +91,8 @@ ChanelsPossible=[1 2 3 4];
 chans=ChanelsPossible(ChanelsSelected>0);
 %Clear axis and plot the well selected
 cla;
-plot(handles.Project.returnWell(contents{get(hObject,'Value')}),chans);
-handles.Project.returnWell(contents{get(hObject,'Value')}).Data(:,3);
+plot(handles.Project(1).returnWell(contents{get(hObject,'Value')}),chans);
+handles.Project(1).returnWell(contents{get(hObject,'Value')}).Data(:,3);
 
 
 % --- Executes on button press in Channel1.
@@ -154,12 +154,17 @@ function OpenFolder_Callback(hObject, eventdata, handles)
 % hObject    handle to OpenFolder (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-FolderName=uigetdir('/Users/danielpacheco/REM Analytics Dropbox/EPFL_Lab/Wet_Lab/Megabace1000_data/MBF15machine/'); %Ask the user for the folder to open
-text_folder = join([FolderName,'/Text']);
-handles.DirName = FolderName;
+%FolderName=uigetdir('/Users/danielpacheco/REM Analytics Dropbox/EPFL_Lab/Wet_Lab/Megabace1000_data/MBF15machine/'); %Ask the user for the folder to open
+
+FolderNames = uigetdir2('/Users/danielpacheco/REM Analytics Dropbox/EPFL_Lab/Wet_Lab/Megabace1000_data/',"Choose 2 runs (different T)");
+if length(FolderNames)>2
+    Expt = MException('Too many input files specified','Select 2 folders at most');
+    throw(Expt);
+end
+text_folder = FolderNames+"/Text";
 %call the function that reads a directory and outputs a list of wells
 %The WellList is stored in handles.Project 
-handles.Project=ReadStandardFolder(text_folder);
+handles.Project=ReadStandardFolders(text_folder);
 
 guidata(hObject,handles); %Save the handle
 
@@ -168,9 +173,9 @@ guidata(hObject,handles); %Save the handle
 %We now update the listbox WellList to contain the name of all the wells
 %that were used and set the Signal and Standard channels to the ones that
 %are chosen.
-set(handles.WellList,'String',handles.Project.WellNames);
-set(handles.StandardChannel,'Value',handles.Project.Standard)
-set(handles.SignalChannel,'Value',handles.Project.Signal)
+set(handles.WellList,'String',handles.Project(1).WellNames);
+set(handles.StandardChannel,'Value',handles.Project(1).Standard)
+set(handles.SignalChannel,'Value',handles.Project(1).Signal)
 
 
 
@@ -210,7 +215,7 @@ function StandardChannel_Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns StandardChannel contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from StandardChannel
-handles.Project.Standard=get(hObject,'Value');
+handles.Project(1).Standard=get(hObject,'Value');
 guidata(hObject,handles);
 
 
@@ -222,7 +227,7 @@ function SignalChannel_Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns SignalChannel contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from SignalChannel
-handles.Project.Signal=get(hObject,'Value');
+handles.Project(1).Signal=get(hObject,'Value');
 guidata(hObject,handles);
 
 
@@ -232,7 +237,7 @@ function PlotAllStandards_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 cla;
-plot(handles.Project.StandardData');
+plot(handles.Project(1).StandardData');
 
 
 
@@ -474,12 +479,12 @@ waveletthreshold=str2double(get(handles.WaveletThreshold,'string'));
 Distances=[str2double(get(handles.Peak1,'string')) str2double(get(handles.Peak2,'string'))...
     str2double(get(handles.Peak3,'string')) str2double(get(handles.Peak4,'string'))];
 %We now identify which is the scoring fucntion that will be used
-
 ScoreFunctions=cellstr(get(handles.ScoringFunction,'String'));
 ScoreFunction=str2func(ScoreFunctions{get(handles.ScoringFunction,'Value')});
+set(handles.ScoringFunction,'tag','scoringFunction') %where h is the handle of the slider
 %We create an object of type Score, called Result, from the data taken from
 %the project
-Result=Score(handles.Project,handles.DirName);
+Result=Score(handles.Project);
 %And we score the Result calling the function DefaultScore that itself will
 %call upon the specific scoring function
 Result.DefaultScore(ScoreFunction,Distances,baseline,cutoff,wavelet,waveletthreshold);

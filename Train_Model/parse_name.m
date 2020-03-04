@@ -1,4 +1,4 @@
-function [name,info_table] = parse_name (input_name,well)
+function [name,info_cell] = parse_name (input_name,well,project_name)
     
     name = split(input_name,'.csv');
     if length(name)<2
@@ -13,15 +13,11 @@ function [name,info_table] = parse_name (input_name,well)
     data = split(name,'_');
     date = string(data(1));
     primer = string(data(2));
-    if ~~ismember('-',primer)
-        primer = join([string(data(2)),string(data(3))],'-');
-    end
-    plate = string(regexp(char(name),'plate\d+','match'));
+    plate = (regexp(char(name),'[pP]late[-_]{0,1}(?<number>\d+)','names'));
     if isempty(plate)
-        plate = 'platexx';
+        plate = struct('number','0');
     end
-    
-    temperatures = regexp(char(name),'[_](?<high>\d\d)[-](?<low>\d\d)','names');
+    temperatures = regexp(char(name),'[_](?<high>\d\d)[_-]{0,1}(?<low>\d\d)','names');
     if isempty(temperatures)
         temperatures = [0,0];
     else
@@ -34,8 +30,10 @@ function [name,info_table] = parse_name (input_name,well)
         name = string(name);
     end
     try
-    info_table = array2table([date,primer,plate,temperatures(1),temperatures(2),well],'VariableNames',{'date','primer_ID','plate_ID','Th','Tl','well'});
-    catch
+    %info_table = array2table([date,project_name,plate,temperatures(1),temperatures(2),well],'VariableNames',{'date','project','plate_ID','Th','Tl','well'});
+    info_cell = cellstr([date,project_name,plate.number,temperatures(1),temperatures(2),well,primer]);
+    catch e
+        fprintf(e.message);
     end
     name = string(name);
 end
