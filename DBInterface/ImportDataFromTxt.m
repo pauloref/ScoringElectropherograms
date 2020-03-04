@@ -44,9 +44,20 @@ for i=1:length(folders)
         if file.isdir
             continue;  
         end
+        file_ending = char(file.name);
+        file_ending = file_ending(end-3:end);
+        if ~strcmp('.txt',file_ending)
+            fprintf('Not a text file: %s \n',file.name);
+            continue;
+        end
         
+        try
+            content = importdata(file.name);
+        catch e
+            fprintf(e);
+            continue;
+        end
         j=j+1;
-        content = importdata(file.name);
         well_id =split(file.name,'.txt'); well_id = well_id(1);
         [ID,info_table] = parse_name(title,well_id,project_name);
         info(j,:) = (info_table);

@@ -10,7 +10,7 @@ start = 1500;
 last = 2600;
 arr = cell(total_size,1);
 index = cell(total_size,1);
-info = cell(total_size,6);
+info = cell(total_size,7);
 j = 0;
 for i=1:length(folders)
     if ismac
@@ -28,11 +28,11 @@ for i=1:length(folders)
         
         addpath(genpath(folders{i}));
         if isempty(files)
-            fprintf('Could not locate file %s',files);
+            fprintf('Could not locate file %s \n',folders{i});
             continue;
         end
     catch e
-        fprintf(e.message);
+        fprintf("%s \n",e.message);
         continue;
     end
     
@@ -44,7 +44,11 @@ for i=1:length(folders)
         if file.isdir
             continue;  
         end
-        
+        format_checker = char(file.name);
+        format_checker = format_checker(end-)
+        if ~ismember('.txt',file.name)
+            continue;
+        end
         j=j+1;
         content = importdata(file.name);
         well_id =split(file.name,'.txt'); well_id = well_id(1);
@@ -59,16 +63,17 @@ for i=1:length(folders)
     %
     
 end
-
-names = {'date','project_id','plate_no','Th','Tl','well'};
+arr(j+1:end)=[];
+info(j+1:end,:) = [];
+index(j+1:end) = [];
+names = {'date','project_id','plate_no','Th','Tl','well','primer'};
 signal_data = cell2table(info);
-
 signal_data.Properties.VariableNames = names;
 signal_data.filename = index;
 signal_data.Th = str2double(signal_data.Th);
 signal_data.Tl = str2double(signal_data.Tl);
 signal_data.plate_no = str2double(signal_data.plate_no);
-signal_data.start = repmat((start),j,1);
+signal_data.start = repmat((start),height(signal_data),1);
 signal_data.signal = (arr);
 %file_out = jsonencode(signal_data);
 %fid = fopen(filename,'wt');
