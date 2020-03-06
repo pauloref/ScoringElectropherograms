@@ -557,20 +557,26 @@ val_names = join([char(val_names),string(('1':'9')')],'_');
 row_names = repmat(handles.Result.fileName,[length(Wells),1]);
 row_names = join([row_names,string(Wells)],'_');
 %col_names = cellstr('Wells',col_names);
-T=array2table(values,'RowNames',row_names,'VariableNames',val_names);
+%T=array2table(values,'RowNames',row_names,'VariableNames',val_names);
+T = array2table(values);
 locdir = cd;
-try
-[Filename,Folder,Type]=uigetfile('*.csv','Save Peaks');
-data = readtable([Folder,Filename],'ReadRowNames',true,'ReadVariableNames',true);
-data = [data;T];
-catch
-[Filename,Folder,Type]=uiputfile(join([string(handles.Result.fileName),".csv"]),'Save Peaks');
+%try
+%[Filename,Folder,Type]=uigetfile('*.csv','Save Peaks');
+%data = readtable([Folder,Filename],'ReadRowNames',true,'ReadVariableNames',true);
+%data = [data;T];
+%catch
+%[Filename,Folder,Type]=uiputfile(join([string(handles.Result.fileName),".csv"]),'Save Peaks');
 data = T;
+%end
+info_table = cell(height(T),6);
+for i=1:height(T)
+    [~,info_table(i,:)] = parse_name(row_names(i),Wells{i},'corn');
 end
 
-
 %data = transposeTable(data);
-data = sortrows(data,'RowNames','ascend');
+%data = sortrows(data,'RowNames','ascend');
+
+ImportDataFromWellGroup(handles.Result.WellList.SignalData,data,row_names)
 cd(Folder);
 writetable(data,Filename,'WriteRowNames',true);
 % fprintf('Target data successfully saved. Now saving signal data. \n');

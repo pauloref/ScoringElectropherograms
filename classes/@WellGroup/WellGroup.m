@@ -73,7 +73,9 @@ classdef WellGroup
                 Well = obj.Wells(find(ismember(obj.WellList,well)));
             end
         
-        
+        function tabledata = toTable(obj)
+            
+        end
         
         %Then Signal Data
         function Matrix = get.SignalData(obj)
@@ -99,6 +101,8 @@ classdef WellGroup
             Names(i,:)=(obj.WellList{i});
             end
         end
+        
+        
         
 %         function fileName = get.FileName(obj)
 %             fileName = obj.FileName;
