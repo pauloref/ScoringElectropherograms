@@ -3,11 +3,7 @@ function conn = PushTableToDB(table_)
 % 
 %server = "dbtb01";
 
-server = {'34.65.235.92'};
-port = 27017;
-dbname = "electropherograms";
-conn = mongo(server,port,"admin","UserName","remanalytics","Password","Q!W@E#R$T%");
-conn.Database = dbname;
+
 count = conn.insert('signals',table_);
 fprintf("Success connecting. A total of %d documents were added to the database\n",count);
 end
