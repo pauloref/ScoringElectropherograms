@@ -7,6 +7,7 @@ Standard=obj.WellList.StandardData; %get standard signal
 Signal=obj.WellList.SignalData; %get signal
 time = obj.WellList.Wells(1,1).Read; %get time
 load('BaggedTrees_w_20.mat'); % load model
+
 model = BaggedTrees_w_20;
 
 

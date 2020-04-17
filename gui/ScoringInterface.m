@@ -22,7 +22,7 @@ function varargout = ScoringInterface(varargin)
 
 % Edit the above text to modify the response to help ScoringInterface
 
-% Last Modified by GUIDE v2.5 28-Dec-2019 22:11:13
+% Last Modified by GUIDE v2.5 02-Apr-2020 09:44:16
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -728,5 +728,46 @@ function swapPlatesButton_KeyPressFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 
+
+
+
+
+% --- Executes on button press in open_peak_file.
+function open_peak_file_Callback(hObject, eventdata, handles)
+% hObject    handle to open_peak_file (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+[filename,directoryName] = uigetfile({'.csv';'.xlsx'},'Select peak file');
+path = join([directoryName,filename],"");
+peakTable = importPeakFile(path);
+fileWells = split(peakTable.Properties.RowNames,"_");
+fileWells = fileWells(:,end);
+obj = handles.Result;
+list = string(split(strjoin(obj.WellList.WellList),' '));
+fileIdx = 1;
+Standard=obj.WellList.StandardData; %get standard signal
+Signal=obj.WellList.SignalData; %get signal
+Window=3;
+for fileWell = fileWells'
+    %corresponding index in current welllist
+    i=obj.WellList.wellNumber(fileWell);
+    peaks = peakTable{fileIdx,:};
+    PeakPos = cell(1,length(peaks));
+    for n=1:length(peaks(peaks~=0))
         
-    
+        pos = (peaks(n));
+        [a b]=PeakInSignal(Signal(i, (pos-Window):(pos+Window)));
+        SignalPeaks(n,:)=[a b+pos-Window-1];
+        [a b]=PeakInSignal(Standard(i,(pos-Window):(pos+Window)));
+        StandardPeaks(n,:)=[a b+pos-Window-1];
+        PeakPos(n)={Peak(peaks(n),Signal(i,:))};
+    end
+    handles.Result.SignalPeaks{i}=PeakPos;
+    handles.Result.StandardPeaks{i}=PeakPos;
+    handles.Result.ScoreStatus(i)=1;
+    fileIdx = fileIdx + 1;
+end
+UpdateScoringInterface(handles);
+
+
+

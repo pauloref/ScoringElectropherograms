@@ -81,15 +81,15 @@ signal_data.Th = str2double(signal_data.Th);
 signal_data.Tl = str2double(signal_data.Tl);
 signal_data.plate_no = str2double(signal_data.plate_no);
 signal_data.start = repmat((start),height(signal_data),1);
+signal_data.project_id = repmat(project_name,height(signal_data),1);
 signal_data.signal = (arr);
 %file_out = jsonencode(signal_data);
 %fid = fopen(filename,'wt');
 %fprintf(fid, file_out);
 %fclose(fid);
 %%
-if nargin==3
-    PushTableToDB(signal_data);
-end
-
+% if nargin==3
+%     PushTableToDB(signal_data);
+% end
 end
 

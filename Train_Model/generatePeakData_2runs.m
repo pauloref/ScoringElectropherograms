@@ -9,42 +9,44 @@ if nargin<5
     prominence=0.025;
     output_type = 2;
 end    
-actual_window = window_size*2+1+2; %signal data and location relative to primer peak
+actual_window = window_size*2+1+5; %signal data and location relative to primer peak
 if output_type == 1
     peak_data = zeros(2,actual_window-1,1,100000);
     %peak_data(100000,1) = image;
 else
-    peak_data = zeros(100000,5);
+    peak_data = zeros(100000,actual_window);
 end
 labels = zeros(100000,1);
-signal_array = table2array(input_table(:,7:end));
+signal_array = table2array(input_table(:,10:end));
 %% Data Preprocessing
 %% Preprocessing
-% smooth with Gaussian filter
-signal_array = smoothdata(signal_array,2,'gaussian',10);
-% remove any trends by fitting line and removing line. Any value under the
-% line is thresholded to 0.
-signal_array = removeBaseline(signal_array);
-% normalize by max value
-max_values = repmat(max((signal_array)')',[1,size(signal_array,2)]);
-signal_array = signal_array./max_values;
+% smooth with Gaussian filter, normalize signal 
+signal_array = PreprocessArray(signal_array);
 primer_positions = findPrimerPeak(signal_array,prominence);
 
 %% Parsing table fields
-primer_names = input_table.primer_ID;
+primer_names = input_table.primer;
 well_names = input_table.well;
-time_vals = split(string(input_table.Properties.VariableNames(7:end)),'t_');
-time_vals = str2double(time_vals(:,:,2));
+% take first value
+time_vals = input_table.start(1) + 1:length(input_table.Properties.VariableNames(10:end));
 k=1; % index of peak data
 for row_name=(output_table.Properties.RowNames')
-    sample_idx = find(ismember(input_table.Properties.RowNames,row_name));
+    sample_idx = find(ismember(input_table.filename,row_name));
     label_idx = find(ismember(output_table.Properties.RowNames,row_name));
-    primer = input_table.primer_ID(sample_idx);
+    primer = input_table.primer(sample_idx);
     well = input_table.well(sample_idx);
     temperature = input_table.Th(sample_idx);
-    pair_idxs = find(ismember(input_table.primer_ID,primer));
-    pair_idx = pair_idxs(find(ismember(input_table.well(pair_idxs),well)));
-    pair_idx = pair_idx(~ismember(pair_idx,sample_idx));
+    plate_no = input_table.plate_no(sample_idx);
+    project_id = input_table.project_id(sample_idx);
+    %% We first filter all the files that belong to the same project
+    project_idx = find(ismember(input_table.project_id,project_id));
+    %% Then we filter based on plate number
+    plate_no_idx = find(ismember(input_table.plate_no(project_idx),plate_no));
+    %% Then we take another file with the same well
+    well_idxs = find(ismember(input_table.well(project_idx(plate_no_idx)),well));
+    %% Then we take the first one
+    pair_idxs = project_idx(plate_no_idx(well_idxs));
+    pair_idx = pair_idxs(~ismember(pair_idxs,sample_idx));
     pair_idx = pair_idx(1);
     signal_pair = signal_array([sample_idx,pair_idx],:);
     %% Now we will find the peaks of our sample
@@ -55,8 +57,13 @@ for row_name=(output_table.Properties.RowNames')
         warning(string(join(['blank at ',row_name])));
         continue;
     end
-    % align peaks
-    D = Align_peaks(signal_pair(1,:),signal_pair(2,:),prominence);
+    try
+    % align peaks returns the offset between the two signals
+        D = Align_peaks(signal_pair(1,:),signal_pair(2,:),prominence);
+    catch e
+        fprintf('%s: %s',[e.identifier,e.message]);
+        continue;
+    end
     % Label each peak
     %LOCS2 = LOCS2+D;
     if D==0
@@ -88,11 +95,12 @@ for row_name=(output_table.Properties.RowNames')
        else
            labels(k) = 0;
        end
+       %% Finds matching peaks between the 2 signals using MSE loss
        [PK2,LOC2,Ww2,Pp2]= match_peaks(pkinfo1,pkinfo2);
        try
            
            signal1 = signal_pair(1,LOC-window_size:LOC+window_size);
-           signal2 = signal_pair(2,LOC-window_size+D:LOC+window_size+D);
+           %signal2 = signal_pair(2,LOC-window_size+D:LOC+window_size+D);
 %            figure
 %            plot(signal1)
 %            hold on
@@ -104,7 +112,7 @@ for row_name=(output_table.Properties.RowNames')
                %peak_data(k,1,:,1:actual_window-1) = image([[LOC-primer_positions(sample_idx);LOC2-primer_positions(pair_idx)],[signal1;signal2]]); %put signal pairs at same window
                peak_data(:,1:actual_window-1,1,k) = [[(LOC-primer_positions(j))/(max_loc-primer_positions(j));(LOC2-primer_positions(pair_idx))/(max_loc-primer_positions(pair_idx))],[signal1;signal2]]; %put signal pairs at same window
            else
-               peak_data(k,1:5) = [LOC-primer_positions(j),LOC-LOC2+D,PK1,Ww,Ww2]; %flatten signal
+               peak_data(k,:) = [LOC-primer_positions(j),LOC-LOC2+D,PK1,Ww,Ww2,signal1]; %flatten signal
            end
            k = k+1;
        catch e
