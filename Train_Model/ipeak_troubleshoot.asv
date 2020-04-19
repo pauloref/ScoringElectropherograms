@@ -1,5 +1,0 @@
-x = size(signal_array,2);
-for i = 1:size(signal_array,1)
-   signal = signal_array(i,:);
-   ipeak(
-end
