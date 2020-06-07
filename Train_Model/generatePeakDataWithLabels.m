@@ -22,10 +22,12 @@ signal_array = table2array(input_table(:,10:end));
 signal_array = PreprocessArray(signal_array);
 primer_positions = findPrimerPeak(signal_array,prominence);
 %% 
-actual_window = window_size*2+1+2; %adding prominence, width at the end
+actual_window = window_size*2+1+2+1; %adding prominence, width at the end
 peak_data = zeros(100000,actual_window);
 labels = zeros(100000,1);
 time_val = zeros(100000,1);
+%project_id = cell(100000,1);
+%file_name = cell(100000,1);
 time_vector = 1:size(signal_array,2);
 time_vector = 1499 + time_vector;
 k=1;
@@ -43,8 +45,11 @@ for row_name=(output_table.Properties.RowNames')
         warning(string(join(['blank at ',row_name])));
         continue;
     end
+    peak_count = length(PKS);
+    %p_id = input_table.project_id(sample_idx);
+    %f_name = input_table.filename_input(sample_idx);
     for j=1:length(LOCS)
-        
+        PK = PKS(j);
         LOC = LOCS(j);
         Ww = W(j);
         Pp = P(j); 
@@ -54,8 +59,10 @@ for row_name=(output_table.Properties.RowNames')
             labels(k) = 0;
         end
             try
-               peak_data(k,:) = [signal_array(sample_idx,LOC-window_size:LOC+window_size),Ww,Pp];
-               time_val(k) = 1500+LOC - primer_positions(sample_idx);
+               shape_features =  signal_array(sample_idx,LOC-window_size:LOC+window_size);
+               shape_features = shape_features/max(shape_features); % collect only shape
+               peak_data(k,:) = [Pp,peak_count,j,shape_features];
+               time_val(k) = LOC - primer_positions(sample_idx);
                k=k+1;
             catch
              
@@ -70,7 +77,13 @@ end
 peak_data(k:end,:)=[];
 labels(k:end) = [];
 time_val(k:end) = [];
+%file_name(k:end) = [];
 peak_data=[time_val,peak_data,labels];
-
+%res = array2table([project_id,file_name],'VariableNames',{'project_id','file_name'});
+res2 = array2table(peak_data);
+res2.Properties.VariableNames(1:4) = {'relative_time','prominence','peak_count','peak_pos'};
+res2.Properties.VariableNames(5:end-1) = matlab.internal.datatypes.numberedNames('normalized_signal',1:41);
+res2.Properties.VariableNames(end) = {'labels'};
+peak_data = res2;
 end
 

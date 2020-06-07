@@ -428,6 +428,7 @@ if ismac
 FunctionList=regexp(ls(),'\w*(?=.m)','match');
 else
     FunctionList=regexp(string(ls()),'\w*(?=.m)','match');
+    FunctionList = FunctionList(3:end);
 end
 set(hObject,'String',FunctionList);
 cd(CurentFolder)
