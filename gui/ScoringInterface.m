@@ -718,16 +718,6 @@ switch answer
         
 end
 
-% --- Executes on key press with focus on swapPlatesButton and none of its controls.
-function swapPlatesButton_KeyPressFcn(hObject, eventdata, handles)
-% hObject    handle to swapPlatesButton (see GCBO)
-% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.UICONTROL)
-%	Key: name of the key that was pressed, in lower case
-%	Character: character interpretation of the key(s) that was pressed
-%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
-% handles    structure with handles and user data (see GUIDATA)
-
-
 
 
 

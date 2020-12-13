@@ -19,7 +19,7 @@ signal_array = table2array(input_table(:,10:end));
 signal_array = PreprocessArray(signal_array);
 primer_positions = findPrimerPeak(signal_array,prominence);
 %%
-actual_window = window_size*2+1+2+1;
+actual_window = window_size*2+4; %shape features + 4 features: prominence, # peaks identified, current peak position.
 peak_data = zeros(100000,actual_window);
 time_val = zeros(100000,1);
 time_vector = 1:size(signal_array,2);
