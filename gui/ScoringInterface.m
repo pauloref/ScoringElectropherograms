@@ -67,6 +67,8 @@ set(handles.file_name_edit, 'String', handles.Result.fileName);
 handles.OFFSET_CST = Align_peaks(handles.Result.WellList.SignalData(handles.CurrentWell,:)...
                                        ,handles.Result.WellList2.SignalData(handles.CurrentWell,:));
 handles.offset = handles.OFFSET_CST;
+handles.wellRepo = MongoBaseRepository('10.244.2.46','Organism',27017,'Well','root','root');
+handles.peakRepo = MongoBaseRepository('10.244.2.46','Organism',27017,'Peak','root','root');
 guidata(hObject, handles);
 % UIWAIT makes ScoringInterface wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
@@ -546,6 +548,7 @@ function savetotraininglibrary_Callback(hObject, eventdata, handles)
 % hObject    handle to savetotraininglibrary (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
 Wells=cellstr(get(handles.WellListBox,'String'));
 %[Filename,Folder,Type]=uiputfile('*.xlsx','Save Mutant Fractions');
 

@@ -154,9 +154,10 @@ function OpenFolder_Callback(hObject, eventdata, handles)
 % hObject    handle to OpenFolder (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
 %FolderName=uigetdir('/Users/danielpacheco/REM Analytics Dropbox/EPFL_Lab/Wet_Lab/Megabace1000_data/MBF15machine/'); %Ask the user for the folder to open
 
-FolderNames = uigetdir2('/Users/danielpacheco/REM Analytics Dropbox/EPFL_Lab/Wet_Lab/Megabace1000_data/',"Choose 2 runs (different T)");
+FolderNames = uigetdir2('C:\Users\danie\REM Analytics Dropbox\Laboratory\Projects\PharmaBiome\Laboratory\PrimerOptimization\CtceData',"Choose 2 runs (different T)");
 if length(FolderNames)>2
     Expt = MException('Too many input files specified','Select 2 folders at most');
     throw(Expt);

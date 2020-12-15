@@ -139,6 +139,7 @@ classdef Score < handle
             end
             obj.SignalPeaks{WellNumber}=PeakContainer;
         end
+       
         
         function AssignStandardlPeaksFromMatrix(obj,WellNumber,PeakData)
             %A function that assigns the Standard peaks in a given well from
