@@ -78,8 +78,6 @@ classdef Score < handle
                     case 1
                         obj.MutantFraction{i}=[1];
                     case 2
-                        MF = (Peaks{1}.Area/(Peaks{2}.Area+Peaks{1}.Area));
-                        obj.MutantFraction{i}=[MF 1-MF];
                     case 3
                     case 4
                         MF=(Peaks{1}.Area+Peaks{3}.Area/2+Peaks{4}.Area/2)/...
@@ -91,8 +89,8 @@ classdef Score < handle
                     case 8
                     case 9
                 end
-                obj.WellList.Wells(i).MutantFraction = obj.MutantFraction{i};
-            end            
+                
+            end
             MutantFraction=obj.MutantFraction;
         end
         

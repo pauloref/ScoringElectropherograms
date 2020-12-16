@@ -50,17 +50,14 @@ for k=list'
     end
     labels = model.predictFcn(peak_data); %predict output from model
     peaks = LOCS(find(labels));
-    PeakPos = cell(1,length(peaks));
+    peakList = cell(1,length(peaks));
     for n=1:length(peaks)
         pos = time(peaks(n));
-        [a b]=PeakInSignal(Signal(i, (pos-Window):(pos+Window)));
-        SignalPeaks(n,:)=[a b+pos-Window-1];
-        [a b]=PeakInSignal(Standard(i,(pos-Window):(pos+Window)));
-        StandardPeaks(n,:)=[a b+pos-Window-1];
-        PeakPos(n)={Peak(peaks(n),Signal(i,:))};        
+        peakList(n)={Peak(peaks(n),Signal(i,:))};        
     end
-    obj.SignalPeaks{i}=PeakPos;
-    obj.StandardPeaks{i}=PeakPos;
+    obj.SignalPeaks{i}=peakList;
+    obj.WellList.Wells(i).Peaks = peakList;
+    obj.StandardPeaks{i}=peakList;
     obj.ScoreStatus(i)=1;
     %set(handles.StandardPeaks,'Data',StandardPeaks);
     %set(handles.SignalPeaks,'Data',SignalPeaks);

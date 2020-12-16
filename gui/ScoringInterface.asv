@@ -22,7 +22,7 @@ function varargout = ScoringInterface(varargin)
 
 % Edit the above text to modify the response to help ScoringInterface
 
-% Last Modified by GUIDE v2.5 16-Dec-2020 16:13:01
+% Last Modified by GUIDE v2.5 02-Apr-2020 09:44:16
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -67,8 +67,8 @@ set(handles.file_name_edit, 'String', handles.Result.fileName);
 handles.OFFSET_CST = Align_peaks(handles.Result.WellList.SignalData(handles.CurrentWell,:)...
                                        ,handles.Result.WellList2.SignalData(handles.CurrentWell,:));
 handles.offset = handles.OFFSET_CST;
-handles.WellSignalRepository = MongoBaseRepository('10.244.2.46','Organism',27017,'WellSignal','root','root');
-handles.WellPeakRepository = MongoBaseRepository('10.244.2.46','Organism',27017,'WellPeak','root','root');
+handles.WellRepository = MongoBaseRepository('10.244.2.46','Organism',27017,'Well','root','root');
+handles.PeakRepository = MongoBaseRepository('10.244.2.46','Organism',27017,'WellPeaks','root','root');
 guidata(hObject, handles);
 % UIWAIT makes ScoringInterface wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
@@ -213,7 +213,29 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
+% --- Executes on button press in SavePeaks.
+function SavePeaks_Callback(hObject, eventdata, handles)
+% hObject    handle to SavePeaks (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+%This button will save peak information in a spreadsheat. The information
+%stored will be: X, Y and Area. Each will be in a different sheet of the
+%file.
+Wells=cellstr(get(handles.WellListBox,'String'));
+%[Filename,Folder,Type]=uiputfile('*.xlsx','Save Mutant Fractions');
+[Filename,Folder,Type]=uiputfile('*.xlsx','Save Peaks',string(handles.Result.fileName));
+locdir=cd;
+cd(Folder);
+Variables={'X','Y','Area'};
 
+for i=1:3
+    values=GetPeakValue(handles.Result,Variables{i});
+    T=table(Wells,values);
+    writetable(T,Filename,'WriteRowNames', false,'Sheet',i);
+end
+cd(locdir);
+UpdateCurrentWell(handles);
+UpdateScoringInterface(handles);
 
 % --- Executes on key press with focus on figure1 or any of its controls.
 function figure1_WindowKeyPressFcn(hObject, eventdata, handles)
@@ -266,10 +288,8 @@ switch eventdata.Key
         Xlength=Xlim(2)-Xlim(1);
         %If the shift buton is pressed, zoom in the axis, else move them to
         %the right
-        if(ismember('shift',modifiers)) 
-            Xlim=[Xlim(1)+MF*Xlength Xlim(2)-MF*Xlength];
-        else
-            Xlim=[Xlim(1)+MF*Xlength Xlim(2)+MF*Xlength];
+        if(ismember('shift',modifiers)) Xlim=[Xlim(1)+MF*Xlength Xlim(2)-MF*Xlength];
+        else Xlim=[Xlim(1)+MF*Xlength Xlim(2)+MF*Xlength];
         end
         set(handles.axes1,'XLim',Xlim);
         
@@ -279,10 +299,9 @@ switch eventdata.Key
         Xlength=Xlim(2)-Xlim(1);
         %If the shift button is pressed, zoom out of the axis, else move
         %them left
-        if(ismember('shift',modifiers)) 
-            Xlim=[Xlim(1)-MF*Xlength Xlim(2)+MF*Xlength];
-        else
-            Xlim=[Xlim(1)-MF*Xlength Xlim(2)-MF*Xlength]; 
+        if(ismember('shift',modifiers)) Xlim=[Xlim(1)-MF*Xlength Xlim(2)+MF*Xlength];
+        elseif (ismember('control',modifiers)) Xlim=[Xlim(1)-MF*Xlength Xlim(2)-MF*Xlength];
+        else 
         end
         set(handles.axes1,'XLim',Xlim);
         
@@ -370,6 +389,21 @@ function MutantFraction_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+
+% --- Executes on button press in SaveResults.
+function SaveResults_Callback(hObject, eventdata, handles)
+% hObject    handle to SaveResults (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+Wells=cellstr(get(handles.WellListBox,'String'));
+Fractions=cell2mat(handles.Result.MutantFraction)';
+T=table(Wells,Fractions);
+[Filename,Folder,Type]=uiputfile('*.csv','Save Mutant Fractions');
+locdir=cd;
+cd(Folder);
+writetable(T,Filename,'WriteRowNames', false);
+cd(locdir);
 
 
 % --- Executes on key press with focus on figure1 and none of its controls.
@@ -510,19 +544,28 @@ UpdateScoringInterface(handles);
 
 
 
-% --- Executes on button press in savesignal.
-function savePeaks_Callback(hObject, eventdata, handles)
-% hObject    handle to savesignal (see GCBO)
+% --- Executes on button press in savetotraininglibrary.
+function savetotraininglibrary_Callback(hObject, eventdata, handles)
+% hObject    handle to savetotraininglibrary (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
 
 %[Filename,Folder,Type]=uiputfile('*.xlsx','Save Mutant Fractions');
 wells = handles.Result.WellList.Wells;
+for i=1:length(wells)
+    processedWell = wells(i);
+    processedWell.Data=[];
+    processedWell.Read=[];
+    processedWell.Current=[];
+end
     
 for well=wells
-   wellPeak = well.toWellPeaks();
-   handles.WellPeakRepository.insert(wellPeak);
+   processedWell = well;
+   processedWell.Data=[];
+   processedWell.Read=[];
+   processedWell.Current=[];
+   handles.WellRepository.insert(processedWell);
 end
 fprintf('Input data successfully saved. \n');
 
@@ -688,30 +731,3 @@ UpdateScoringInterface(handles);
 
 
 
-
-
-% --- Executes on button press in savesignal.
-function saveSignal_Callback(hObject, eventdata, handles)
-% hObject    handle to savesignal (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-% saves raw signal to db
-wells = handles.Result.WellList.Wells;
-for well=wells
-   signal = well.toWellSignal();
-   handles.WellSignalRepository.insert(signal);
-end
-
-% --- Executes on button press in SaveMutantFractions.
-function SaveMutantFractions_Callback(hObject, eventdata, handles)
-% hObject    handle to SaveMutantFractions (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-Wells=cellstr(get(handles.WellListBox,'String'));
-Fractions=cell2mat(handles.Result.MutantFraction)';
-T=table(Wells,Fractions);
-[Filename,Folder,Type]=uiputfile('*.csv','Save Mutant Fractions');
-locdir=cd;
-cd(Folder);
-writetable(T,Filename,'WriteRowNames', false);
-cd(locdir);

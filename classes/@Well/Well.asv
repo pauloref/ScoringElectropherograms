@@ -16,8 +16,7 @@ classdef Well
         FileName    string
         Primer      string
         WellId      string
-        Peaks       cell
-        MutantFraction double 
+        Peaks       cell        
     end
     
   
@@ -51,14 +50,10 @@ classdef Well
             wellPeak = struct('FileName',obj.FileName,...
                               'Primer',obj.Primer,...
                               'WellId',obj.WellId,...
-                              'MutantFraction',obj.MutantFraction,...
-                              'Peaks',[obj.Peaks{:}]);                       
+                              'Peaks',obj.Peaks);                       
         end
         function wellSignal = toWellSignal(obj)
-           wellSignal = struct('Signals',obj.Data',...
-                               'Time',obj.Read,...
-                               'Current',obj.Current,...
-                               'FileName',obj.FileName);
+           wellSignal = struct('Signals',obj.Data'...);
            
         end
         
