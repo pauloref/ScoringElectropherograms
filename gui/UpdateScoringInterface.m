@@ -17,6 +17,7 @@ set(handles.StandardPeaks,'Data',StandardPeakMatrix(handles.Result,handles.Curre
 set(handles.SignalPeaks,'Data',SignalPeakMatrix(handles.Result,handles.CurrentWell));
 set(handles.MutantFraction,'Data', handles.Result.MutantFraction{handles.CurrentWell});
 set(handles.PeakNumber,'String',int2str(size(get(handles.SignalPeaks,'Data'),1)));
+set(handles.primer_name_edit,'String',handles.Result.WellList.Wells(handles.CurrentWell).PrimerName);
 PlotSelectedWell(handles);
 end
 

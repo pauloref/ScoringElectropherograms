@@ -157,7 +157,7 @@ function OpenFolder_Callback(hObject, eventdata, handles)
 
 %FolderName=uigetdir('/Users/danielpacheco/REM Analytics Dropbox/EPFL_Lab/Wet_Lab/Megabace1000_data/MBF15machine/'); %Ask the user for the folder to open
 
-FolderNames = uigetdir2('C:\Users\danie\REM Analytics Dropbox\Laboratory\Projects\PharmaBiome\Laboratory\PrimerOptimization\CtceData',"Choose 2 runs (different T)");
+FolderNames = uigetdir2('C:\Users\danie\REM Analytics Dropbox\Laboratory\Projects\PharmaBiome\Laboratory\PrimerOptimization\ProofOfConcept_Pb\CTCERuns',"Choose 2 runs (different T)");
 if length(FolderNames)>2
     Expt = MException('Too many input files specified','Select 2 folders at most');
     throw(Expt);

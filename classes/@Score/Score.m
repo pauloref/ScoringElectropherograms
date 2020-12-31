@@ -10,10 +10,11 @@ classdef Score < handle
         WellList2 %The well list for second plate
         PeakNumbers %The number of peaks detected in each well
         ScoreStatus %A vector of booleans. If true the corresponding well has been scored
-        StandardPeaks %A matrix of peaks containing the Standard Peaks
-        SignalPeaks %A matrix of peaks containing the Signal Peaks
         MutantFraction %A list of cells containig the matrixes for the mutant fraction
         fileName %A string with the name of the file
+        PlateCount 
+        SignalPeaks
+        StandardPeaks
     end
     
     properties (Dependent = true )
@@ -27,18 +28,20 @@ classdef Score < handle
         %We first deine a default constructor
         function obj=Score(welllist)
             obj.WellList = welllist(1); %main run
-            if length(welllist)>1
-                obj.WellList2 = welllist(2); %second run
+            if (welllist(2).N>1)
+                obj.WellList2 = welllist(2);
+                obj.PlateCount=2;
             else
-                obj.WellList2 = [];
+                obj.PlateCount = 1;
             end
-            obj.ScoreStatus=zeros(1,welllist.N);
-            obj.PeakNumbers=zeros(1,welllist.N);
+            
+            obj.ScoreStatus=zeros(1,welllist(1).N);
+            obj.PeakNumbers=zeros(1,welllist(1).N);
             %Peaks=cell(obj.WellList.N,1);
-            obj.SignalPeaks=cell(1,welllist.N);
-            obj.StandardPeaks=cell(1,welllist.N);
-            obj.MutantFraction=cell(1,welllist.N);
-            obj.fileName = obj.WellList.FileName;
+            obj.SignalPeaks=cell(1,welllist(1).N);
+            obj.StandardPeaks=cell(1,welllist(1).N);
+            obj.MutantFraction=cell(1,welllist(1).N);
+            obj.fileName = obj.WellList(1).FileName;
             
         end
         
@@ -139,8 +142,8 @@ classdef Score < handle
             for k=1:NPeaks
                 PeakContainer{k}=Peak(PeakData(k,2),obj.WellList.Wells(WellNumber).Data(:,obj.WellList.Signal));
             end
-            obj.SignalPeaks{WellNumber}=PeakContainer;
             obj.WellList.Wells(WellNumber).Peaks = PeakContainer;
+            
         end
        
         
@@ -189,8 +192,14 @@ classdef Score < handle
             end
             
         end
-        function togglePeakScores(obj,idx)
+        function SwapWellOrder(obj,idx)
+                      
             % Function takes new indices to toggle score matrix
+            obj.WellList = obj.WellList.SwapWellOrder();
+            if (obj.PlateCount>1) 
+                obj.WellList2 = obj.WellList2.SwapWellOrder();
+            end
+            
             obj.SignalPeaks = obj.SignalPeaks(idx);
             obj.StandardPeaks = obj.StandardPeaks(idx);
         end
@@ -198,8 +207,10 @@ classdef Score < handle
         function obj_out = toggleCurrentRun(obj)
             % Function switches from wellist 1 to welllist 2
             % it will overwrite all peaks
-           WellLists = [obj.WellList2,obj.WellList];
-           obj_out = Score(WellLists);
+           if (obj.PlateCount>1)
+            WellLists = [obj.WellList2,obj.WellList];
+            obj_out = Score(WellLists);
+           end
         end
         
     end

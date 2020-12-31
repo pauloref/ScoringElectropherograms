@@ -18,7 +18,7 @@ classdef MongoBaseRepository
             conn.changeDB(databaseName);
             obj.MongoCollection = collectionName;
             obj.MongoConnection = conn;          
-            obj.MongoConnection.createCollection(collectionName);
+            %obj.MongoConnection.createCollection(collectionName);
         end        
         function noDocsInserted = insert(obj,entity)
             %Insert one or multiple documents in table format

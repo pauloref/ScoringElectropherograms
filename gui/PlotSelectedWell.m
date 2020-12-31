@@ -11,7 +11,9 @@ cla;
 plot(handles.Result.WellList.Wells(handles.CurrentWell),chans);
 hold on
 %We now plot second run
-Plot2ndRun(handles);
+if (handles.Result.PlateCount>1)
+    Plot2ndRun(handles);
+end
 %We now plot the peaks
 PlotPeaks(handles);
 

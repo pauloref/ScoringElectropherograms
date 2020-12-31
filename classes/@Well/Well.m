@@ -14,10 +14,12 @@ classdef Well
         Read        double    %The read number associated with the data
         Current     double   %The current for each read
         FileName    string
-        Primer      string
+        PrimerName      string
         WellId      string
         Peaks       cell
         MutantFraction double 
+        Tl          double  %low temperature of ctce run
+        Th          double  %high temperature of ctce run
     end
     
   
@@ -25,7 +27,7 @@ classdef Well
         
         function obj=Well(textFile,directoryName,wellId,primerName)
             if nargin>3
-                obj.Primer = primerName;
+                obj.PrimerName = primerName;
             end
             if nargin>2
                 obj.WellId = wellId;
@@ -49,19 +51,32 @@ classdef Well
         end
         function wellPeak = toWellPeaks(obj)
             wellPeak = struct('FileName',obj.FileName,...
-                              'Primer',obj.Primer,...
+                              'PrimerName',obj.PrimerName,...
                               'WellId',obj.WellId,...
                               'MutantFraction',obj.MutantFraction,...
+                              'Th',obj.Th,...
+                              'Tl',obj.Tl,...
                               'Peaks',[obj.Peaks{:}]);                       
         end
         function wellSignal = toWellSignal(obj)
            wellSignal = struct('Signals',obj.Data',...
+                               'WellId',obj.WellId,...
                                'Time',obj.Read,...
                                'Current',obj.Current,...
-                               'FileName',obj.FileName);
-           
+                               'FileName',obj.FileName,...
+                               'Th',obj.Th,...
+                               'Tl',obj.Tl,...
+                               'PrimerName',obj.PrimerName);           
         end
-        
+        function obj = set.Th(obj,value)
+           obj.Th = value; 
+        end
+        function obj = set.Tl(obj,value)
+           obj.Tl = value; 
+        end
+        function obj = set.Peaks(obj,peaks)
+           obj.Peaks = peaks;           
+        end
         Fig = plot(Obj,channels)
     end
     

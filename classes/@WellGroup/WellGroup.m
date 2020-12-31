@@ -8,14 +8,15 @@ classdef WellGroup
         Standard %The channel corresponding to the Standard (if any)
         WellList %A list of the names of the wells in the Wells property
         FileName
+        Tl       double 
+        Th       double 
     end
     
     properties (Dependent = true )
         N   %The number of wells in the WellGroup
         SignalData %The matrix containing all the signals
         StandardData %The matrix containing all the Standards
-        WellNames
-        
+        WellNames        
     end
     
     
@@ -100,7 +101,50 @@ classdef WellGroup
             Names(i,:)=(obj.WellList{i});
             end
         end
+        function obj = set.Th(obj,th)
+           obj.Th = th;
+           for ii = 1:length(obj.Wells)
+              obj.Wells(ii).Th = th; 
+           end
+        end
+        function obj = set.Tl(obj,tl)
+            obj.Tl = tl;
+            for ii = 1:length(obj.Wells)
+                obj.Wells(ii).Tl = tl;
+            end
+        end
         
+        function obj = ToggleWellOrder(obj)
+            number_idx=[1:12:96,...
+                2:12:96,...
+                3:12:96,...
+                4:12:96,...
+                5:12:96,...
+                6:12:96,...
+                7:12:96,...
+                8:12:96,...
+                9:12:96,...
+                10:12:96,...
+                11:12:96,...
+                12:12:96];
+            letter_idx=[1:8:96,...
+                2:8:96,...
+                3:8:96,...
+                4:8:96,...
+                5:8:96,...
+                6:8:96,...
+                7:8:96,...
+                8:8:96];
+            
+            if strcmp(obj.WellList{2},'A02')   %swap indeces
+                obj.WellList = obj.WellList(number_idx);
+                obj.Wells = obj.Wells(number_idx);
+            else
+                obj.WellList = obj.WellList(letter_idx);
+                obj.Wells = obj.Wells(letter_idx);
+            end
+            
+        end
 %         function fileName = get.FileName(obj)
 %             fileName = obj.FileName;
 %         end

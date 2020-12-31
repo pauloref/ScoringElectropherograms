@@ -22,7 +22,7 @@ function varargout = ScoringInterface(varargin)
 
 % Edit the above text to modify the response to help ScoringInterface
 
-% Last Modified by GUIDE v2.5 16-Dec-2020 16:13:01
+% Last Modified by GUIDE v2.5 20-Dec-2020 20:48:00
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -64,9 +64,11 @@ handles.CurrentWell=1;
 
 set(handles.WellListBox,'String',handles.Result.WellList.WellNames);
 set(handles.file_name_edit, 'String', handles.Result.fileName);
-handles.OFFSET_CST = Align_peaks(handles.Result.WellList.SignalData(handles.CurrentWell,:)...
+if (handles.Result.PlateCount>1)
+    handles.OFFSET_CST = Align_peaks(handles.Result.WellList.SignalData(handles.CurrentWell,:)...
                                        ,handles.Result.WellList2.SignalData(handles.CurrentWell,:));
-handles.offset = handles.OFFSET_CST;
+    handles.offset = handles.OFFSET_CST;
+end
 handles.WellSignalRepository = MongoBaseRepository('10.244.2.46','Organism',27017,'WellSignal','root','root');
 handles.WellPeakRepository = MongoBaseRepository('10.244.2.46','Organism',27017,'WellPeak','root','root');
 guidata(hObject, handles);
@@ -510,7 +512,7 @@ UpdateScoringInterface(handles);
 
 
 
-% --- Executes on button press in savesignal.
+% --- Executes on button press in 
 function savePeaks_Callback(hObject, eventdata, handles)
 % hObject    handle to savesignal (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -554,39 +556,11 @@ function pushbutton6_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton6 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-number_idx=[1:12:96,...
-            2:12:96,...
-            3:12:96,...
-            4:12:96,...
-            5:12:96,...
-            6:12:96,...
-            7:12:96,...
-            8:12:96,...
-            9:12:96,...
-            10:12:96,...
-            11:12:96,...
-            12:12:96];
-letter_idx=[1:8:96,...
-            2:8:96,...
-            3:8:96,...
-            4:8:96,...
-            5:8:96,...
-            6:8:96,...
-            7:8:96,...
-            8:8:96];
-if strcmp(handles.Result.WellList.WellList{2},'A02')   %swap indeces
-    handles.Result.WellList.WellList = handles.Result.WellList.WellList(number_idx);
-    handles.Result.WellList2.WellList = handles.Result.WellList2.WellList(number_idx);
-    handles.Result.WellList.Wells = handles.Result.WellList.Wells(number_idx);
-    handles.Result.WellList2.Wells = handles.Result.WellList2.Wells(number_idx);
+    handles.Result.WellList = handles.Result.WellList.SwapWellOrder();
+    if (handles.Result.PlateCount>1)
+       handles.Result.WellList2 = handles.Result.WellList2.SwapWellOrder(); 
+    end
     handles.Result.togglePeakScores(number_idx);
-else
-    handles.Result.WellList.WellList = handles.Result.WellList.WellList(letter_idx);
-    handles.Result.WellList2.WellList = handles.Result.WellList2.WellList(letter_idx);
-    handles.Result.WellList.Wells = handles.Result.WellList.Wells(letter_idx);
-    handles.Result.WellList2.Wells = handles.Result.WellList2.Wells(letter_idx);
-    handles.Result.togglePeakScores(letter_idx);
-end
 UpdateScoringInterface(handles);
 ScoringInterface_OpeningFcn(hObject, eventdata, handles,{2});
 
@@ -701,6 +675,7 @@ for well=wells
    signal = well.toWellSignal();
    handles.WellSignalRepository.insert(signal);
 end
+fprintf('Signal data successfully saved. \n');
 
 % --- Executes on button press in SaveMutantFractions.
 function SaveMutantFractions_Callback(hObject, eventdata, handles)
@@ -715,3 +690,82 @@ locdir=cd;
 cd(Folder);
 writetable(T,Filename,'WriteRowNames', false);
 cd(locdir);
+
+
+
+function primer_name_edit_Callback(hObject, eventdata, handles)
+% hObject    handle to primer_name_edit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of primer_name_edit as text
+%        str2double(get(hObject,'String')) returns contents of primer_name_edit as a double
+primerName = get(hObject,'String');
+for i=1:length(handles.Result.WellList.Wells)
+   if isempty(handles.Result.WellList.Wells(i).PrimerName)
+       handles.Result.WellList.Wells(i).PrimerName = primerName;
+   end
+end
+handles.Result.WellList.Wells(handles.CurrentWell).PrimerName = primerName;
+UpdateScoringInterface(handles);
+
+% --- Executes during object creation, after setting all properties.
+function primer_name_edit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to primer_name_edit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function Tl_edit_Callback(hObject, eventdata, handles)
+% hObject    handle to Tl_edit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of Tl_edit as text
+%        str2double(get(hObject,'String')) returns contents of Tl_edit as a double
+tl = str2double(get(hObject,'String'));
+handles.Result.WellList.Tl = tl;
+
+% --- Executes during object creation, after setting all properties.
+function Tl_edit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to Tl_edit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function Th_edit_Callback(hObject, eventdata, handles)
+% hObject    handle to Th_edit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of Th_edit as text
+%        str2double(get(hObject,'String')) returns contents of Th_edit as a double
+th = str2double(get(hObject,'String'));
+handles.Result.WellList.Th = th;
+
+% --- Executes during object creation, after setting all properties.
+function Th_edit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to Th_edit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
